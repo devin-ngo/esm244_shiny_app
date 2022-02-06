@@ -10,8 +10,6 @@
 library(shiny)
 library(here)
 
-read.csv(here("data", "food_access_subset"))
-
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
@@ -40,13 +38,30 @@ ui <- fluidPage(
                                                  "Texas" = "Texas", "Utah" = "Utah", "Vermont" = "Vermont",
                                                  "Virginia" = "Virginia", "Washington" = "Washington", "West Virginia" = "West Virginia",
                                                  "Wisconsin" = "Wisconsin", "Wyoming" = "Wyoming"), 
-                                  selected = "Alabama"),
+                                  selected = "Alabama"), # something here needs to be changed
                       
                       hr(),
                       fluidRow(column(12, verbatimTextOutput("state")))
                     ) # end sidebarPanel
-                  ) #End sidebarLayout   
-                        ) # End tabPanel
+                  ), #End sidebarLayout  
+                 mainPanel(
+                   print(state)
+                 ) # end mainPanel
+                        ), # End tabPanel
+              tabPanel(
+                "Widget 2",
+                sidebarLayout(
+                  sidebarPanel(
+                         sliderInput("income",
+                                     min = 0, 
+                                     max = 250, 
+                                     value = c(50, 100)) # in thousands $, also something here needs to be changed
+                  ), # end sidebarPanel
+                  mainPanel(
+                    print(incomeRange) # need something for output
+                  )
+                ) # end sidebarLayout
+              ), # end tabPanel
                ), # End navbarPage
 
     # Sidebar with a slider input for number of bins 
@@ -68,6 +83,8 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
+  output$state <- renderPrint({ input$select })
 
     output$distPlot <- renderPlot({
         # generate bins based on input$bins from ui.R
