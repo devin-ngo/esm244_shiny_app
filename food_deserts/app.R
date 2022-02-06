@@ -9,6 +9,9 @@
 
 library(shiny)
 library(here)
+library(tidyverse)
+
+food_access <- read_csv(here("data", "food_access_subset.csv"))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
