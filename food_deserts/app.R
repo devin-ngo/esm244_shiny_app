@@ -7,78 +7,94 @@ library(shinythemes)
 food_access <- read_csv(here("data", "food_access_subset.csv")) %>% 
   mutate(median_family_income = as.character(median_family_income))
 
-# Define UI for application 
-ui <- fluidPage(theme = shinytheme("sandstone"),
-   
-    # Application title
-    titlePanel("Food Deserts in America"),
-    navbarPage("My Application",
-               tabPanel("Widget 1",
-                  sidebarLayout(
-                    sidebarPanel(
-                      selectInput(inputId = "state", 
-                                  label = "choose state", 
-                                  choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona",
-                                                 "Arkansas" = "Arkansas", "California" = "California", "Colorado" = "Colorado",
-                                                 "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
-                                                 "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
-                                                 "Illinois" = "Illinois", "Indiana" = "Indiana", "Iowa" = "Iowa",
-                                                 "Kansas" = "Kansas", "Kentucky" = "Kentucky", "Louisiana" = "Louisiana",
-                                                 "Maine" = "Maine", "Maryland" = "Maryland", "Massechussetts" = "Massechussetts",
-                                                 "Michigan" = "Michigan", "Minnesota" = "Minnesota", "Mississippi" = "Mississippi",
-                                                 "Missouri" = "Missouri", "Montana" = "Montana", "Nebraska" = "Nebraska",
-                                                 "Nevada" = "Nevada", "New Hampshire" = "New Hampshire", "New Jersey" = "New Jersey",
-                                                 "New Mexico" = "New Mexico", "New York" = "New York", "North Carolina" = "North Carolina",
-                                                 "North Dakota" = "North Dakota", "Ohio" = "Ohio", "Oklahoma" = "Oklahoma",
-                                                 "Oregon" = "Oregon", "Pennsylvania" = "Pennsylvania", "Rhode Island" = "Rhode Island",
-                                                 "South Carolina" = "South Carolina", "South Dakota" = "South Dakota", "Tennessee" = "Tennessee",
-                                                 "Texas" = "Texas", "Utah" = "Utah", "Vermont" = "Vermont",
-                                                 "Virginia" = "Virginia", "Washington" = "Washington", "West Virginia" = "West Virginia",
-                                                 "Wisconsin" = "Wisconsin", "Wyoming" = "Wyoming"), 
-                                  selected = "Alabama"),
-                    ), # end sidebarPanel
-                    mainPanel(
-                      "put state map here"
-                    ) # end mainPanel
-                  )), #End sidebarLayout
-               tabPanel("Widget 2",
-                 sidebarLayout(                 
-                   sidebarPanel(
-                   sliderInput(inputId = "income",
-                               min = 0, 
-                               max = 250, 
-                               value = c(50, 100)), # in thousands $
-                   selectInput(inputId = "state",
-                               label = ("Choose State:"), 
-                               choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona",
-                                              "Arkansas" = "Arkansas", "California" = "California", "Colorado" = "Colorado",
-                                              "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
-                                              "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
-                                              "Illinois" = "Illinois", "Indiana" = "Indiana", "Iowa" = "Iowa",
-                                              "Kansas" = "Kansas", "Kentucky" = "Kentucky", "Louisiana" = "Louisiana",
-                                              "Maine" = "Maine", "Maryland" = "Maryland", "Massechussetts" = "Massechussetts",
-                                              "Michigan" = "Michigan", "Minnesota" = "Minnesota", "Mississippi" = "Mississippi",
-                                              "Missouri" = "Missouri", "Montana" = "Montana", "Nebraska" = "Nebraska",
-                                              "Nevada" = "Nevada", "New Hampshire" = "New Hampshire", "New Jersey" = "New Jersey",
-                                              "New Mexico" = "New Mexico", "New York" = "New York", "North Carolina" = "North Carolina",
-                                              "North Dakota" = "North Dakota", "Ohio" = "Ohio", "Oklahoma" = "Oklahoma",
-                                              "Oregon" = "Oregon", "Pennsylvania" = "Pennsylvania", "Rhode Island" = "Rhode Island",
-                                              "South Carolina" = "South Carolina", "South Dakota" = "South Dakota", "Tennessee" = "Tennessee",
-                                              "Texas" = "Texas", "Utah" = "Utah", "Vermont" = "Vermont",
-                                              "Virginia" = "Virginia", "Washington" = "Washington", "West Virginia" = "West Virginia",
-                                              "Wisconsin" = "Wisconsin", "Wyoming" = "Wyoming"), 
-                               selected = "Alabama"),
-                 ), # end sidebarPanel
-                   mainPanel(
-                     "put income range here" # need something for output
-                   ), # end main panel
-                     mainPanel(
-                       "Put state here"
-                     ) # end mainPanel
-                 ) # end sidebarLayout
-               ), # end tabPanel
-               ), # End navbarPage
-)
+# Define UI for application that draws a histogram
+ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own theme later
+                titlePanel("Food Deserts in America "), # Application title 
+                navbarPage("Food Access Tools",
+                           tabPanel("W1 - Rural/Urban Breakdown",
+                                    sidebarLayout(
+                                      sidebarPanel("Breakdown of rural and urban areas by state"), #end sidebar panel
+                                      selectInput("select", label = h3("Select State"), 
+                                                  choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona", "Arkansas" = "Arkansas", "California" = "California", 
+                                                                 "Colorado" = "Colorado", "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
+                                                                 "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
+                                                                 "Illinois" = "Illinois", "Indiana" = "Indiana", "Iowa" = "Iowa",
+                                                                 "Kansas" = "Kansas", "Kentucky" = "Kentucky", "Louisiana" = "Louisiana",
+                                                                 "Maine" = "Maine", "Maryland" = "Maryland", "Massechussetts" = "Massechussetts",
+                                                                 "Michigan" = "Michigan", "Minnesota" = "Minnesota", "Mississippi" = "Mississippi",
+                                                                 "Missouri" = "Missouri", "Montana" = "Montana", "Nebraska" = "Nebraska",
+                                                                 "Nevada" = "Nevada", "New Hampshire" = "New Hampshire", "New Jersey" = "New Jersey",
+                                                                 "New Mexico" = "New Mexico", "New York" = "New York", "North Carolina" = "North Carolina",
+                                                                 "North Dakota" = "North Dakota", "Ohio" = "Ohio", "Oklahoma" = "Oklahoma",
+                                                                 "Oregon" = "Oregon", "Pennsylvania" = "Pennsylvania", "Rhode Island" = "Rhode Island",
+                                                                 "South Carolina" = "South Carolina", "South Dakota" = "South Dakota", "Tennessee" = "Tennessee",
+                                                                 "Texas" = "Texas", "Utah" = "Utah", "Vermont" = "Vermont",
+                                                                 "Virginia" = "Virginia", "Washington" = "Washington", "West Virginia" = "West Virginia",
+                                                                 "Wisconsin" = "Wisconsin", "Wyoming" = "Wyoming"),
+                                                  selected = "Alabama") # end select input
+                                    ), # end sidebarPanel 1
+                                    mainPanel(
+                                      plotOutput("distPlot")
+                                    ) #End sidebarLayout 1 
+                           ), #End Tab 1
+                           
+                           tabPanel("W2 - Income Range",
+                                    sidebarLayout(
+                                      sidebarPanel("Tracking access by median family income",
+                                                   sliderInput("slider2", label = h3("Income Range (in thousands USD)"), min = 0, 
+                                                               max = 250, value = c(50, 100)),
+                                                   selectInput("select", label = h3("Select State"), 
+                                                               choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona", "Arkansas" = "Arkansas", "California" = "California", 
+                                                                              "Colorado" = "Colorado", "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
+                                                                              "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
+                                                                              "Illinois" = "Illinois", "Indiana" = "Indiana", "Iowa" = "Iowa",
+                                                                              "Kansas" = "Kansas", "Kentucky" = "Kentucky", "Louisiana" = "Louisiana",
+                                                                              "Maine" = "Maine", "Maryland" = "Maryland", "Massechussetts" = "Massechussetts",
+                                                                              "Michigan" = "Michigan", "Minnesota" = "Minnesota", "Mississippi" = "Mississippi",
+                                                                              "Missouri" = "Missouri", "Montana" = "Montana", "Nebraska" = "Nebraska",
+                                                                              "Nevada" = "Nevada", "New Hampshire" = "New Hampshire", "New Jersey" = "New Jersey",
+                                                                              "New Mexico" = "New Mexico", "New York" = "New York", "North Carolina" = "North Carolina",
+                                                                              "North Dakota" = "North Dakota", "Ohio" = "Ohio", "Oklahoma" = "Oklahoma",
+                                                                              "Oregon" = "Oregon", "Pennsylvania" = "Pennsylvania", "Rhode Island" = "Rhode Island",
+                                                                              "South Carolina" = "South Carolina", "South Dakota" = "South Dakota", "Tennessee" = "Tennessee",
+                                                                              "Texas" = "Texas", "Utah" = "Utah", "Vermont" = "Vermont",
+                                                                              "Virginia" = "Virginia", "Washington" = "Washington", "West Virginia" = "West Virginia",
+                                                                              "Wisconsin" = "Wisconsin", "Wyoming" = "Wyoming"),
+                                                               selected = "Alabama")
+                                      ), #end sidebarPanel 2
+                                      mainPanel(
+                                        plotOutput("distPlot")) #end mainPanel
+                                    ) # end sidebarLayout 2
+                           ), #End tabPanel 2
+                           
+                           tabPanel("W3 - Ethnicity Checkbox", 
+                                    sidebarLayout(
+                                      sidebarPanel("Distance from a supermarket based on ethnicity group",
+                                                   checkboxGroupInput("checkGroup", label = h3("Ethnicity"), 
+                                                                      choices = list("American Indian and Alaska Native" = 1, "Asian" = 2, "Black or African American" = 3, 
+                                                                                     "Hispanic or Latino" = 4, "Native Hawaiian and Other Pacific Islander" = 5, 
+                                                                                     "White" = 6, "Other/Multiple Race Population" = 7),
+                                                                      selected = 1)
+                                      ), #end sidebarPanel 3
+                                      mainPanel(
+                                        plotOutput("distPlot")) #end mainPanel
+                                    ) #end sidebar Layout
+                           ), #end tabPanel 3
+                           
+                           tabPanel("W4 - Access Tracts",
+                                    sidebarLayout(
+                                      sidebarPanel("Low access tracts based on miles from supermarket",
+                                                   radioButtons("radio", label = h3("Distance"),
+                                                                choices = list("1/2 Mile" = 1, "1 Mile" = 2, "10 Miles" = 3, "20 Miles" = 4), 
+                                                                selected = 1)
+                                      ), #end sidebarPanel 4
+                                      mainPanel(
+                                        plotOutput("distPlot")) #end mainPanel
+                                    ) #end sidebar Layout
+                           ) #end tabPanel 4
+                           
+                ) #End Navbar Page
+) # End UI
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -112,19 +128,3 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
-# Sidebar with a slider input for number of bins 
-# sidebarLayout(
-#     sidebarPanel(
-#         sliderInput("bins",
-#                     "Number of bins:",
-#                     min = 1,
-#                     max = 50,
-#                     value = 30)
-#     ),
-# 
-#     # Show a plot of the generated distribution
-#     mainPanel(
-#        plotOutput("distPlot")
-#     )
-# )
