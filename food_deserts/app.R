@@ -91,7 +91,18 @@ ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own th
                                       mainPanel(
                                         plotOutput("distPlot")) #end mainPanel
                                     ) #end sidebar Layout
-                           ) #end tabPanel 4
+                           ), #end tabPanel 4
+                           
+                           tabPanel("About Page",
+                                    sidebarLayout(
+                                      sidebarPanel("About this app:"
+                                      ), # end sidebarPanel 5
+                                      mainPanel(h6("This app is focused on examining food deserts in the US and 
+                                                   how factors such as income and ethnicity play a role in the distance of individuals 
+                                                   are located from supermarkets. We hope to shed a light on the issue of food insecurity
+                                                   and how changes need to be made to improve access to food for disadvantaged communities")) #end mainPanel
+                                    ) # end sidebarLayout
+                                    ) #end tabPanel 5
                            
                 ) #End Navbar Page
 ) # End UI
