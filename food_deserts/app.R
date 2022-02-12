@@ -2,6 +2,8 @@ library(shiny)
 library(here)
 library(tidyverse)
 library(shinythemes)
+library(leaflet)
+library(leaflet.extras)
 
 # Reading in data
 food_access <- read_csv(here("data", "food_access_subset.csv")) %>% 
@@ -110,11 +112,11 @@ ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own th
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  print_state <- reactive({
+  map <- reactive({
     food_access %>% 
       filter(state = input$state)
   })
-  output$state <- renderPrint({ state })
+  output$state <- renderLeaflet({ input$state })
   
   print_income <- reactive({
     food_access %>% 
