@@ -16,7 +16,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own th
                            tabPanel("W1 - Rural/Urban Breakdown",
                                     sidebarLayout(
                                       sidebarPanel("Breakdown of rural and urban areas by state"), #end sidebar panel
-                                      selectInput("select", label = h3("Select State"), 
+                                      selectInput(inputId = "state", label = h3("Select State"), 
                                                   choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona", "Arkansas" = "Arkansas", "California" = "California", 
                                                                  "Colorado" = "Colorado", "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
                                                                  "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
@@ -43,9 +43,9 @@ ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own th
                            tabPanel("W2 - Income Range",
                                     sidebarLayout(
                                       sidebarPanel("Tracking access by median family income",
-                                                   sliderInput("slider2", label = h3("Income Range (in thousands USD)"), min = 0, 
+                                                   sliderInput(inputId = "median_family_income", label = h3("Income Range (in thousands USD)"), min = 0, 
                                                                max = 250, value = c(50, 100)),
-                                                   selectInput("select", label = h3("Select State"), 
+                                                   selectInput(inputId = "state", label = h3("Select State"), 
                                                                choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona", "Arkansas" = "Arkansas", "California" = "California", 
                                                                               "Colorado" = "Colorado", "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
                                                                               "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
@@ -118,11 +118,25 @@ server <- function(input, output) {
   })
   output$state <- renderLeaflet({ input$state })
   
-  print_income <- reactive({
+  income_snap_table <- reactive({
     food_access %>% 
-      filter(income = input$median_family_income)
+      filter(income == input$median_family_income, state == input$state) %>% 
+      mutate(median_family_income = case_when(
+        input$median_family_income >= "0" & input$median_family_income < "25000" ~ "1",
+        input$median_family_income >= "25000" & input$median_family_income < "50000" ~ "2",
+        input$median_family_income >= "50000" & input$median_family_income < "75000" ~ "3",
+        input$median_family_income >= "75000" & input$median_family_income < "100000" ~ "4",
+        input$median_family_income >= "100000" & input$median_family_income < "125000" ~ "5",
+        input$median_family_income >= "125000" & input$median_family_income < "150000" ~ "6",
+        input$median_family_income >= "150000" & input$median_family_income < "175000" ~ "7",
+        input$median_family_income >= "175000" & input$median_family_income < "200000" ~ "8",
+        input$median_family_income >= "200000" & input$median_family_income < "225000" ~ "9",
+        input$median_family_income >= "225000" & input$median_family_income <= "250000" ~ "10"
+      )) %>% 
+      group_by(input$state, input$median_family_income) %>% 
+      summarize(mean_SNAP = mean(tract_snap))
   })
-  output$income <- renderPrint({ income })
+  output$income <- renderPrint({ income_snap_table })
   
   print_state <- reactive({
     food_access %>% 
