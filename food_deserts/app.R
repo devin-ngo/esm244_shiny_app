@@ -65,7 +65,9 @@ ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own th
                                                                selected = "Alabama")
                                       ), #end sidebarPanel 2
                                       mainPanel(
-                                        plotOutput("distPlot")) #end mainPanel
+                                        tableOutput(outputId = "state_pop_table"),
+                                        tableOutput(outputId = "income_snap_table")
+                                        ) #end mainPanel
                                     ) # end sidebarLayout 2
                            ), #End tabPanel 2
                            
@@ -118,6 +120,16 @@ server <- function(input, output) {
   })
   output$state <- renderLeaflet({ input$state })
   
+  state_pop_table <- reactive({
+    food_access %>% 
+    group_by(input$state) %>% 
+      summarize(total_pop = sum(pop2010),
+                total_snap = sum(tract_snap))
+  })
+  output$state_pop_table <- renderTable({
+    state_pop_table()
+  })
+  
   income_snap_table <- reactive({
     food_access %>% 
       filter(income == input$median_family_income, state == input$state) %>% 
@@ -136,7 +148,8 @@ server <- function(input, output) {
       group_by(input$state, input$median_family_income) %>% 
       summarize(mean_SNAP = mean(tract_snap))
   })
-  output$income <- renderPrint({ income_snap_table })
+  output$income_snap_table <- renderPrint({ 
+    income_snap_table() })
   
   print_state <- reactive({
     food_access %>% 
