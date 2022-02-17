@@ -118,48 +118,48 @@ server <- function(input, output) {
     paste("You have selected", input$state)
   })
   
-  # map <- reactive({
-  #   food_access %>% 
-  #     filter(state = input$state)
-  # })
-  # output$state <- renderLeaflet({ input$state })
+  map <- reactive({
+    food_access %>% 
+      filter(state = input$state)
+  })
+  output$state <- renderLeaflet({ input$state })
   
-  # state_pop_table <- reactive({
-  #   food_access %>% 
-  #   group_by(input$state) %>% 
-  #     summarize(total_pop = sum(pop2010),
-  #               total_snap = sum(tract_snap))
-  # })
-  # output$state_pop_table <- renderTable({
-  #   state_pop_table()
-  # })
+  state_pop_table <- reactive({
+    food_access %>% 
+    group_by(input$state) %>% 
+      summarize(total_pop = sum(pop2010),
+                total_snap = sum(tract_snap))
+  })
+  output$state_pop_table <- renderTable({
+    state_pop_table()
+  })
   
-  # income_snap_table <- reactive({
-  #   food_access %>% 
-  #     filter(income == input$median_family_income, state == input$state) %>% 
-  #     mutate(median_family_income = case_when(
-  #       input$median_family_income >= "0" & input$median_family_income < "25000" ~ "1",
-  #       input$median_family_income >= "25000" & input$median_family_income < "50000" ~ "2",
-  #       input$median_family_income >= "50000" & input$median_family_income < "75000" ~ "3",
-  #       input$median_family_income >= "75000" & input$median_family_income < "100000" ~ "4",
-  #       input$median_family_income >= "100000" & input$median_family_income < "125000" ~ "5",
-  #       input$median_family_income >= "125000" & input$median_family_income < "150000" ~ "6",
-  #       input$median_family_income >= "150000" & input$median_family_income < "175000" ~ "7",
-  #       input$median_family_income >= "175000" & input$median_family_income < "200000" ~ "8",
-  #       input$median_family_income >= "200000" & input$median_family_income < "225000" ~ "9",
-  #       input$median_family_income >= "225000" & input$median_family_income <= "250000" ~ "10"
-  #     )) %>% 
-  #     group_by(input$state, input$median_family_income) %>% 
-  #     summarize(mean_SNAP = mean(tract_snap))
-  # })
-  # output$income_snap_table <- renderPrint({ 
-  #   income_snap_table() })
+  income_snap_table <- reactive({
+    food_access %>% 
+      filter(income == input$median_family_income, state == input$state) %>% 
+      mutate(median_family_income = case_when(
+        input$median_family_income >= "0" & input$median_family_income < "25000" ~ "1",
+        input$median_family_income >= "25000" & input$median_family_income < "50000" ~ "2",
+        input$median_family_income >= "50000" & input$median_family_income < "75000" ~ "3",
+        input$median_family_income >= "75000" & input$median_family_income < "100000" ~ "4",
+        input$median_family_income >= "100000" & input$median_family_income < "125000" ~ "5",
+        input$median_family_income >= "125000" & input$median_family_income < "150000" ~ "6",
+        input$median_family_income >= "150000" & input$median_family_income < "175000" ~ "7",
+        input$median_family_income >= "175000" & input$median_family_income < "200000" ~ "8",
+        input$median_family_income >= "200000" & input$median_family_income < "225000" ~ "9",
+        input$median_family_income >= "225000" & input$median_family_income <= "250000" ~ "10"
+      )) %>% 
+      group_by(input$state, input$median_family_income) %>% 
+      summarize(mean_SNAP = mean(tract_snap))
+  })
+  output$income_snap_table <- renderPrint({ 
+    income_snap_table() })
   
-  # print_state <- reactive({
-  #   food_access %>% 
-  #     filter(state = input$state)
-  # })
-  # output$state <- renderPrint({ state })
+  print_state <- reactive({
+    food_access %>% 
+      filter(state = input$state)
+  })
+  output$state <- renderPrint({ state })
 }
 
 # Run the application 
