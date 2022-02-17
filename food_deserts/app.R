@@ -135,6 +135,7 @@ server <- function(input, output) {
   })
   
   income_snap_table <- reactive({
+    message("Income-snap table reactive")
     food_access %>% 
       filter(income == input$median_family_income, state == input$state) %>% 
       mutate(median_family_income = case_when(
@@ -152,7 +153,8 @@ server <- function(input, output) {
       group_by(input$state, input$median_family_income) %>% 
       summarize(mean_SNAP = mean(tract_snap))
   })
-  output$income_snap_table <- renderPrint({ 
+  output$income_snap_table <- renderTable({ 
+    message("render table")
     income_snap_table() })
   
   print_state <- reactive({
