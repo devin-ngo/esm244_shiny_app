@@ -164,6 +164,16 @@ server <- function(input, output) {
   output$income_snap_table <- renderTable({ 
     message("render table")
     income_snap_table() })
+  
+  
+  # Widget 3 output
+  
+  
+  
+  # widget 4 output
+  
+  
+  
 }
 
 # Run the application 
