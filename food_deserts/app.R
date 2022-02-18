@@ -4,6 +4,8 @@ library(tidyverse)
 library(shinythemes)
 library(leaflet)
 library(leaflet.extras)
+library(tmap)
+library(tmaptools)
 
 # Reading in data
 food_access <- read_csv(here("data", "food_access_subset.csv")) %>% 
@@ -17,22 +19,23 @@ ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own th
                                     sidebarLayout(
                                       sidebarPanel("Breakdown of rural and urban areas by state"), #end sidebar panel
                                       selectInput(inputId = "state", label = h3("Select State"), 
-                                                  choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona", "Arkansas" = "Arkansas", "California" = "California", 
-                                                                 "Colorado" = "Colorado", "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
-                                                                 "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
-                                                                 "Illinois" = "Illinois", "Indiana" = "Indiana", "Iowa" = "Iowa",
-                                                                 "Kansas" = "Kansas", "Kentucky" = "Kentucky", "Louisiana" = "Louisiana",
-                                                                 "Maine" = "Maine", "Maryland" = "Maryland", "Massechussetts" = "Massechussetts",
-                                                                 "Michigan" = "Michigan", "Minnesota" = "Minnesota", "Mississippi" = "Mississippi",
-                                                                 "Missouri" = "Missouri", "Montana" = "Montana", "Nebraska" = "Nebraska",
-                                                                 "Nevada" = "Nevada", "New Hampshire" = "New Hampshire", "New Jersey" = "New Jersey",
-                                                                 "New Mexico" = "New Mexico", "New York" = "New York", "North Carolina" = "North Carolina",
-                                                                 "North Dakota" = "North Dakota", "Ohio" = "Ohio", "Oklahoma" = "Oklahoma",
-                                                                 "Oregon" = "Oregon", "Pennsylvania" = "Pennsylvania", "Rhode Island" = "Rhode Island",
-                                                                 "South Carolina" = "South Carolina", "South Dakota" = "South Dakota", "Tennessee" = "Tennessee",
-                                                                 "Texas" = "Texas", "Utah" = "Utah", "Vermont" = "Vermont",
-                                                                 "Virginia" = "Virginia", "Washington" = "Washington", "West Virginia" = "West Virginia",
-                                                                 "Wisconsin" = "Wisconsin", "Wyoming" = "Wyoming"),
+                                                  choices = list("Alabama", "Alaska", "Arizona", 
+                                                                 "Arkansas", "California", "Colorado",
+                                                                 "Connecticut", "Delaware", "Florida",
+                                                                 "Georgia", "Hawaii", "Idaho",
+                                                                 "Illinois", "Indiana", "Iowa",
+                                                                 "Kansas", "Kentucky", "Louisiana",
+                                                                 "Maine", "Maryland", "Massechussetts",
+                                                                 "Michigan", "Minnesota", "Mississippi",
+                                                                 "Missouri", "Montana", "Nebraska",
+                                                                 "Nevada", "New Hampshire", "New Jersey",
+                                                                 "New Mexico", "New York", "North Carolina",
+                                                                 "North Dakota", "Ohio", "Oklahoma",
+                                                                 "Oregon", "Pennsylvania", "Rhode Island",
+                                                                 "South Carolina", "South Dakota", "Tennessee",
+                                                                 "Texas", "Utah", "Vermont",
+                                                                 "Virginia", "Washington", "West Virginia",
+                                                                 "Wisconsin", "Wyoming"),
                                                   selected = "Alabama") # end select input
                                     ), # end sidebarPanel 1
                                     mainPanel(
@@ -46,22 +49,23 @@ ui <- fluidPage(theme = shinytheme("sandstone"), #Will probably customize own th
                                                    sliderInput(inputId = "median_family_income", label = h3("Income Range (in thousands USD)"), min = 0, 
                                                                max = 250, value = c(50, 100)),
                                                    selectInput(inputId = "state", label = h3("Select State"), 
-                                                               choices = list("Alabama" = "Alabama", "Alaska" = "Alaska", "Arizona" = "Arizona", "Arkansas" = "Arkansas", "California" = "California", 
-                                                                              "Colorado" = "Colorado", "Connecticut" = "Connecticut", "Delaware" = "Delaware", "Florida" = "Florida",
-                                                                              "Georgia" = "Georgia", "Hawaii" = "Hawaii", "Idaho" = "Idaho",
-                                                                              "Illinois" = "Illinois", "Indiana" = "Indiana", "Iowa" = "Iowa",
-                                                                              "Kansas" = "Kansas", "Kentucky" = "Kentucky", "Louisiana" = "Louisiana",
-                                                                              "Maine" = "Maine", "Maryland" = "Maryland", "Massechussetts" = "Massechussetts",
-                                                                              "Michigan" = "Michigan", "Minnesota" = "Minnesota", "Mississippi" = "Mississippi",
-                                                                              "Missouri" = "Missouri", "Montana" = "Montana", "Nebraska" = "Nebraska",
-                                                                              "Nevada" = "Nevada", "New Hampshire" = "New Hampshire", "New Jersey" = "New Jersey",
-                                                                              "New Mexico" = "New Mexico", "New York" = "New York", "North Carolina" = "North Carolina",
-                                                                              "North Dakota" = "North Dakota", "Ohio" = "Ohio", "Oklahoma" = "Oklahoma",
-                                                                              "Oregon" = "Oregon", "Pennsylvania" = "Pennsylvania", "Rhode Island" = "Rhode Island",
-                                                                              "South Carolina" = "South Carolina", "South Dakota" = "South Dakota", "Tennessee" = "Tennessee",
-                                                                              "Texas" = "Texas", "Utah" = "Utah", "Vermont" = "Vermont",
-                                                                              "Virginia" = "Virginia", "Washington" = "Washington", "West Virginia" = "West Virginia",
-                                                                              "Wisconsin" = "Wisconsin", "Wyoming" = "Wyoming"),
+                                                               choices = list("Alabama", "Alaska", "Arizona", 
+                                                                              "Arkansas", "California", "Colorado",
+                                                                              "Connecticut", "Delaware", "Florida",
+                                                                              "Georgia", "Hawaii", "Idaho",
+                                                                              "Illinois", "Indiana", "Iowa",
+                                                                              "Kansas", "Kentucky", "Louisiana",
+                                                                              "Maine", "Maryland", "Massechussetts",
+                                                                              "Michigan", "Minnesota", "Mississippi",
+                                                                              "Missouri", "Montana", "Nebraska",
+                                                                              "Nevada", "New Hampshire", "New Jersey",
+                                                                              "New Mexico", "New York", "North Carolina",
+                                                                              "North Dakota", "Ohio", "Oklahoma",
+                                                                              "Oregon", "Pennsylvania", "Rhode Island",
+                                                                              "South Carolina", "South Dakota", "Tennessee",
+                                                                              "Texas", "Utah", "Vermont",
+                                                                              "Virginia", "Washington", "West Virginia",
+                                                                              "Wisconsin", "Wyoming"),
                                                                selected = "Alabama")
                                       ), #end sidebarPanel 2
                                       mainPanel(
