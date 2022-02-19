@@ -141,7 +141,7 @@ server <- function(input, output) {
                  max.categories = 80)
 
     county_tmap <- tm_shape(state_county_sf) +
-      tm_fill("county") +
+      tm_fill("county", legend.show = FALSE) +
       tm_borders(col = "black")
 
     print(county_tmap)
