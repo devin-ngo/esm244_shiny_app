@@ -23,6 +23,8 @@ county_subset_sf <- county_sf %>%
 state_subset_sf <- county_sf %>% 
   select(state, shape_area)
 
+rur_urb_geom_sf <- read_sf(here("rur_urb_geom_sf/rur_urb_geom_sf.shp"))
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
                 titlePanel("Food Deserts in America "), # Application title 
@@ -132,8 +134,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
 server <- function(input, output) {
   
   county_map <- reactive({
-    state_county_sf <- county_subset_sf %>%
-      filter( state == input$state) %>% 
+    state_county_sf <- rur_urb_geom_sf %>%
+      filter(state == input$state) %>% 
       st_as_sf(state_county_sf)
 
     tmap_mode(mode = "view")
@@ -141,7 +143,7 @@ server <- function(input, output) {
                  max.categories = 80)
 
     county_tmap <- tm_shape(state_county_sf) +
-      tm_fill("county", legend.show = FALSE) +
+      tm_fill("type", legend.show = FALSE, popup.vars = c("County" = "county", "Total Population (2010)" = "total_pop", "County Classification" = "type")) +
       tm_borders(col = "black")
 
     print(county_tmap)
