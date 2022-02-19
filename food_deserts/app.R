@@ -8,6 +8,7 @@ library(tmap)
 library(tmaptools)
 library(sf)
 library(janitor)
+library(rasterize)
 
 # Reading in data
 food_access <- read_csv(here("data", "food_access_subset.csv")) %>% 
@@ -18,6 +19,9 @@ county_sf <- read_sf(here("data/US_County_Boundaries/US_County_Boundaries.shp"))
 
 county_subset_sf <- county_sf %>% 
   select(state, county, shape_area)
+
+state_subset_sf <- county_sf %>% 
+  select(state, shape_area)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
@@ -47,9 +51,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                   selected = "Alabama") # end select input
                                     ), # end sidebarPanel 1
                                     mainPanel(
-                                      # plotOutput("state_map")
                                       plotOutput("county_map")
-                                    
                                     ) #End sidebarLayout 1
                            ), #End Tab 1
                            
@@ -79,8 +81,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                                selected = "Alabama")
                                       ), #end sidebarPanel 2
                                       mainPanel(
-                                        tableOutput(outputId = "state_pop_table"),
-                                        tableOutput(outputId = "income_snap_table")
+                                        # tableOutput(outputId = "state_pop_table"),
+                                        # tableOutput(outputId = "income_snap_table")
                                         ) #end mainPanel
                                     ) # end sidebarLayout 2
                            ), #End tabPanel 2
@@ -118,7 +120,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                       mainPanel(h6("This app is focused on examining food deserts in the US and 
                                                    how factors such as income and ethnicity play a role in the distance of individuals 
                                                    are located from supermarkets. We hope to shed a light on the issue of food insecurity
-                                                   and how changes need to be made to improve access to food for disadvantaged communities")) #end mainPanel
+                                                   and how changes need to be made to improve access to food for disadvantaged communities"),
+                                                plotOutput("state_map")) #end mainPanel
                                     ) # end sidebarLayout
                                     ) #end tabPanel 5
                            
@@ -128,30 +131,19 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  # state_map <- reactive({
-  #   state_map <- county_subset_sf %>% 
-  #     ggplot(data = county_subset_sf) +
-  #     geom_sf(aes(fill = state), color = "white", size = 0.1)
-  #   print(state_map)
-  #   return(state_map)
-  # })
-  # 
-  # output$state_map <- renderPlot({
-  #   state_map()
-  # })
-  
   county_map <- reactive({
-    state_county_sf <- county_subset_sf %>% 
-      filter( state == input$state)
-    
+    state_county_sf <- county_subset_sf %>%
+      filter( state == input$state) %>% 
+      st_as_sf(state_county_sf)
+
     tmap_mode(mode = "view")
-    
+    tmap_options(check.and.fix = TRUE,
+                 max.categories = 80)
+
     county_tmap <- tm_shape(state_county_sf) +
       tm_fill("county") +
       tm_borders(col = "black")
-    
-    tmap_options(check.and.fix = TRUE)
-    
+
     print(county_tmap)
     return(county_tmap)
   })
@@ -159,49 +151,43 @@ server <- function(input, output) {
   output$county_map <- renderPlot({
     county_map()
   })
-
-  map <- reactive({
-    food_access %>%
-      filter(state == input$state)
-  })
-  output$state <- renderLeaflet({ input$state })
   
-  state_pop_table <- reactive({
-    message("Input$state2 = ", input$state2)
-    state_fa <- food_access %>% 
-    filter(state == input$state2) %>% 
-      summarize(total_pop = sum(pop2010),
-                total_snap = sum(tract_snap))
-    print(state_fa)
-    return(state_fa)
-  })
-  output$state_pop_table <- renderTable({
-    message("message 2")
-    state_pop_table()
-  })
-  
-  income_snap_table <- reactive({
-    message("Income-snap table reactive")
-    food_access %>% 
-      filter(median_family_income == input$median_family_income, state == input$state2) %>% 
-      mutate(median_family_income = case_when(
-        input$median_family_income >= "0" & input$median_family_income < "25000" ~ "1",
-        input$median_family_income >= "25000" & input$median_family_income < "50000" ~ "2",
-        input$median_family_income >= "50000" & input$median_family_income < "75000" ~ "3",
-        input$median_family_income >= "75000" & input$median_family_income < "100000" ~ "4",
-        input$median_family_income >= "100000" & input$median_family_income < "125000" ~ "5",
-        input$median_family_income >= "125000" & input$median_family_income < "150000" ~ "6",
-        input$median_family_income >= "150000" & input$median_family_income < "175000" ~ "7",
-        input$median_family_income >= "175000" & input$median_family_income < "200000" ~ "8",
-        input$median_family_income >= "200000" & input$median_family_income < "225000" ~ "9",
-        input$median_family_income >= "225000" & input$median_family_income <= "250000" ~ "10"
-      )) %>% 
-      group_by(median_family_income) %>% 
-      summarize(mean_SNAP = mean(tract_snap))
-  })
-  output$income_snap_table <- renderTable({ 
-    message("render table")
-    income_snap_table() })
+  # state_pop_table <- reactive({
+  #   message("Input$state2 = ", input$state2)
+  #   state_fa <- food_access %>% 
+  #   filter(state == input$state2) %>% 
+  #     summarize(total_pop = sum(pop2010),
+  #               total_snap = sum(tract_snap))
+  #   print(state_fa)
+  #   return(state_fa)
+  # })
+  # output$state_pop_table <- renderTable({
+  #   message("message 2")
+  #   state_pop_table()
+  # })
+  # 
+  # income_snap_table <- reactive({
+  #   message("Income-snap table reactive")
+  #   food_access %>% 
+  #     filter(median_family_income == input$median_family_income, state == input$state2) %>% 
+  #     mutate(median_family_income = case_when(
+  #       input$median_family_income >= "0" & input$median_family_income < "25000" ~ "1",
+  #       input$median_family_income >= "25000" & input$median_family_income < "50000" ~ "2",
+  #       input$median_family_income >= "50000" & input$median_family_income < "75000" ~ "3",
+  #       input$median_family_income >= "75000" & input$median_family_income < "100000" ~ "4",
+  #       input$median_family_income >= "100000" & input$median_family_income < "125000" ~ "5",
+  #       input$median_family_income >= "125000" & input$median_family_income < "150000" ~ "6",
+  #       input$median_family_income >= "150000" & input$median_family_income < "175000" ~ "7",
+  #       input$median_family_income >= "175000" & input$median_family_income < "200000" ~ "8",
+  #       input$median_family_income >= "200000" & input$median_family_income < "225000" ~ "9",
+  #       input$median_family_income >= "225000" & input$median_family_income <= "250000" ~ "10"
+  #     )) %>% 
+  #     group_by(median_family_income) %>% 
+  #     summarize(mean_SNAP = mean(tract_snap))
+  # })
+  # output$income_snap_table <- renderTable({ 
+  #   message("render table")
+  #   income_snap_table() })
   
   
   # Widget 3 output
@@ -211,6 +197,20 @@ server <- function(input, output) {
   # widget 4 output
   
   
+  # About Page
+  state_map <- reactive({
+    tmap_mode(mode = "view")
+    
+    state_tmap <- tm_shape(state_subset_sf) +
+      tm_fill("state") +
+      tm_borders(col = "black")
+    print(state_map)
+    return(state_map)
+  })
+  
+  output$state_map <- renderPlot({
+    state_map()
+  })
   
 }
 
