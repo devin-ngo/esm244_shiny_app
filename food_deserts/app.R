@@ -51,7 +51,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                   selected = "Alabama") # end select input
                                     ), # end sidebarPanel 1
                                     mainPanel(
-                                      plotOutput("county_map")
+                                      tmapOutput("county_map")
                                     ) #End sidebarLayout 1
                            ), #End Tab 1
                            
@@ -148,7 +148,7 @@ server <- function(input, output) {
     return(county_tmap)
   })
 
-  output$county_map <- renderPlot({
+  output$county_map <- renderTmap({
     county_map()
   })
   
