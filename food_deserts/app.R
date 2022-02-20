@@ -25,6 +25,8 @@ state_subset_sf <- county_sf %>%
 
 rur_urb_geom_sf <- read_sf(here("rur_urb_geom_sf/rur_urb_geom_sf.shp"))
 
+vehicle_food <- read_csv(here("data", "vehicle_food_subset.csv"))
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
                 titlePanel("Food Deserts in America "), # Application title 
@@ -203,27 +205,30 @@ server <- function(input, output) {
   # widget 4 output
   
   # Creating subset for vehicle access 
-  vehicle_access <- reactive({
-    vehicles <- food_access %>%
-      select(state, lapophalf, lapop1, lapop10, lapop20, tract_hunv) %>%
-      filter(state == input$state4) %>%
-      select(sum_half == input$distance_radio) %>%
-      group_by(state) %>%
-      summarize(sum_half = sum(lapophalf),
-                sum_1 = sum(lapop1),
-                sum_10 = sum(lapop10),
-                sum_20 = sum(lapop20),
-                housing_units = sum(tract_hunv))
-
-    vehicles_plot <- ggplot(vehicles, aes(x = housing_units, y = sum_half)) +
-      geom_point(aes(color = state)) +
-      theme_minimal()
-  })
-
-  output$vehicle_plot <- renderPlot({
-    vehicles_plot()
-  })
+  # vehicle_access <- reactive({
+  #   vehicles <- food_access %>%
+  #     select(state, lapophalf, lapop1, lapop10, lapop20, tract_hunv) %>%
+  #     filter(state == input$state4) %>%
+  #     select(sum_half == input$distance_radio) %>%
+  #     group_by(state) %>%
+  #     summarize(sum_half = sum(lapophalf),
+  #               sum_1 = sum(lapop1),
+  #               sum_10 = sum(lapop10),
+  #               sum_20 = sum(lapop20),
+  #               housing_units = sum(tract_hunv))
+  # 
+  #   vehicles_plot <- ggplot(vehicles, aes(x = housing_units, y = sum_half)) +
+  #     geom_point(aes(color = state)) +
+  #     theme_minimal()
+  # })
+  # 
+  # output$vehicle_plot <- renderPlot({
+  #   vehicles_plot()
+  # })
   
+  vehicle_access_plot <- reactive({
+    plot <- ggplot()
+  })
   
   
   # About Page
