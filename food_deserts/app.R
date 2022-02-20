@@ -33,7 +33,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                 navbarPage("Food Access Tools",
                            tabPanel("W1 - Rural/Urban Breakdown",
                                     sidebarLayout(
-                                      sidebarPanel("Breakdown of rural and urban areas by state"), #end sidebar panel
+                                      sidebarPanel("Breakdown of rural and urban areas by state", #end sidebar panel
                                       selectInput(inputId = "state", label = h3("Select State"),
                                                   choices = list("Alabama", "Alaska", "Arizona",
                                                                  "Arkansas", "California", "Colorado",
@@ -55,7 +55,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                   selected = "Alabama") # end select input
                                     ), # end sidebarPanel 1
                                     mainPanel(
-                                      tmapOutput("county_map")
+                                      tmapOutput("county_map"))
                                     ) #End sidebarLayout 1
                            ), #End Tab 1
                            
@@ -112,12 +112,12 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                       sidebarPanel("Low access tracts based on miles from supermarket",
                                                    selectInput(inputId = "state4", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
-                                                   radioButtons(inputId = "distance_radio", label = h3("Distance"),
-                                                                choices = list("1/2 Mile" = "pop_half", "1 Mile" = "pop1", "10 Miles" = "pop10", "20 Miles" = "pop20"),
-                                                                selected = "pop1")
+                                                   radioButtons(inputId = "urban_radio", label = h3("County Classification:"),
+                                                                choices = list("Urban" = "Urban", "Rural" = "Rural"),
+                                                                selected = "Urban")
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        plotOutput("vehicle_access_plot")) #end mainPanel
+                                        tableOutput("vehicle_access_table")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
                            
@@ -226,17 +226,15 @@ server <- function(input, output) {
   #   vehicles_plot()
   # })
   
-  vehicle_access_plot <- reactive({
-    vehicle_state <- vehicle_food %>% 
-      filter(state == input$state4)
-    
-    ggplot(data = vehicle_state,
-           aes(x = input$distance_radio, y = tot_pop)) +
-      geom_point(aes(color = county, shape = urban))
+  vehicle_access_table <- reactive({
+    vehicle_state_urb <- vehicle_food %>% 
+      filter(state == input$state4, 
+             urban == input$urban_radio) %>% 
+      select(-state, -urban, -tot_pop, -sum_tract)
   })
   
-  output$vehicle_access_plot <- renderPlot({
-    vehicle_access_plot()
+  output$vehicle_access_table <- renderTable({
+    vehicle_access_table()
   })
   
   # About Page
