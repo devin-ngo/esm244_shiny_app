@@ -113,11 +113,11 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                    selectInput(inputId = "state4", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
                                                    radioButtons(inputId = "distance_radio", label = h3("Distance"),
-                                                                choices = list("1/2 Mile" = 1, "1 Mile" = 2, "10 Miles" = 3, "20 Miles" = 4),
-                                                                selected = 1)
+                                                                choices = list("1/2 Mile" = "pop_half", "1 Mile" = "pop1", "10 Miles" = "pop10", "20 Miles" = "pop20"),
+                                                                selected = "pop1")
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        plotOutput("vehicles_plot")) #end mainPanel
+                                        plotOutput("vehicle_access_plot")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
                            
@@ -227,15 +227,23 @@ server <- function(input, output) {
   # })
   
   vehicle_access_plot <- reactive({
-    plot <- ggplot()
+    vehicle_state <- vehicle_food %>% 
+      filter(state == input$state4)
+    
+    ggplot(data = vehicle_state,
+           aes(x = input$distance_radio, y = tot_pop)) +
+      geom_point(aes(color = county, shape = urban))
   })
   
+  output$vehicle_access_plot <- renderPlot({
+    vehicle_access_plot()
+  })
   
   # About Page
   state_map <- reactive({
     tmap_mode(mode = "view")
     
-    state_tmap <- tm_shape(state_subset_sf) +
+        state_tmap <- tm_shape(state_subset_sf) +
       tm_fill("state") +
       tm_borders(col = "black")
     print(state_map)
