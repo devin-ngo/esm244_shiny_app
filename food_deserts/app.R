@@ -115,7 +115,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                                 selected = 1)
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        plotOutput("vehicle_plot")) #end mainPanel
+                                        plotOutput("vehicles_plot")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
                            
@@ -205,23 +205,24 @@ server <- function(input, output) {
   # Creating subset for vehicle access 
   vehicle_access <- reactive({
     vehicles <- food_access %>%
-      select(state, lapophalf, lapop1, lapop10, lapop20, tract_hunv) %>% 
-      group_by(state) %>% 
+      select(state, lapophalf, lapop1, lapop10, lapop20, tract_hunv) %>%
+      filter(state == input$state4) %>%
+      select(sum_half == input$distance_radio) %>%
+      group_by(state) %>%
       summarize(sum_half = sum(lapophalf),
                 sum_1 = sum(lapop1),
                 sum_10 = sum(lapop10),
                 sum_20 = sum(lapop20),
-                housing_units = sum(tract_hunv)) %>% 
-      filter(state == input$state4) %>% 
-      select(sum_half == input$"1/2mile")
-  })
-  
-  output$vehicle_plot <- renderPlot({
-    ggplot(vehicles, aes(x = housing_units, y = sum_half)) +
+                housing_units = sum(tract_hunv))
+
+    vehicles_plot <- ggplot(vehicles, aes(x = housing_units, y = sum_half)) +
       geom_point(aes(color = state)) +
-      theme_minimal() 
-    
-  }) 
+      theme_minimal()
+  })
+
+  output$vehicle_plot <- renderPlot({
+    vehicles_plot()
+  })
   
   
   
