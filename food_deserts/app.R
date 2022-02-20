@@ -92,6 +92,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                            tabPanel("W3 - Ethnicity Checkbox",
                                     sidebarLayout(
                                       sidebarPanel("Distance from a supermarket based on ethnicity group",
+                                                   selectInput(inputId = "state3", label = h3("Select State"),
+                                                               choices = unique(food_access$state), selected = "Alabama"),  
                                                    checkboxGroupInput(inputId = "ethnicity_check", label = h3("Ethnicity"),
                                                                       choices = list("American Indian and Alaska Native" = 1, "Asian" = 2, "Black or African American" = 3,
                                                                                      "Hispanic or Latino" = 4, "Native Hawaiian and Other Pacific Islander" = 5,
@@ -106,12 +108,14 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                            tabPanel("W4 - Access Tracts",
                                     sidebarLayout(
                                       sidebarPanel("Low access tracts based on miles from supermarket",
+                                                   selectInput(inputId = "state4", label = h3("Select State"),
+                                                               choices = unique(food_access$state), selected = "Alabama"),  
                                                    radioButtons(inputId = "distance_radio", label = h3("Distance"),
                                                                 choices = list("1/2 Mile" = 1, "1 Mile" = 2, "10 Miles" = 3, "20 Miles" = 4),
                                                                 selected = 1)
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        ) #end mainPanel
+                                        plotOutput("vehicle_plot")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
                            
@@ -197,6 +201,28 @@ server <- function(input, output) {
   
   
   # widget 4 output
+  
+  # Creating subset for vehicle access 
+  vehicle_access <- reactive({
+    vehicles <- food_access %>%
+      select(state, lapophalf, lapop1, lapop10, lapop20, tract_hunv) %>% 
+      group_by(state) %>% 
+      summarize(sum_half = sum(lapophalf),
+                sum_1 = sum(lapop1),
+                sum_10 = sum(lapop10),
+                sum_20 = sum(lapop20),
+                housing_units = sum(tract_hunv)) %>% 
+      filter(state == input$state4) %>% 
+      select(sum_half == input$"1/2mile")
+  })
+  
+  output$vehicle_plot <- renderPlot({
+    ggplot(vehicles, aes(x = housing_units, y = sum_half)) +
+      geom_point(aes(color = state)) +
+      theme_minimal() 
+    
+  }) 
+  
   
   
   # About Page
