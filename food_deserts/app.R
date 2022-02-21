@@ -27,6 +27,9 @@ rur_urb_geom_sf <- read_sf(here("rur_urb_geom_sf/rur_urb_geom_sf.shp"))
 
 vehicle_food <- read_csv(here("data", "vehicle_food_subset.csv"))
 
+pivot_longer_vehicle <- vehicle_food %>% 
+  pivot_longer(vehicle_half:vehicle20)
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
                 titlePanel("Food Deserts in America "), # Application title 
@@ -111,13 +114,14 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                     sidebarLayout(
                                       sidebarPanel("Low access tracts based on miles from supermarket",
                                                    selectInput(inputId = "state4", label = h3("Select State"),
-                                                               choices = unique(food_access$state), selected = "Alabama"),  
-                                                   radioButtons(inputId = "urban_radio", label = h3("County Classification:"),
-                                                                choices = list("Urban" = "Urban", "Rural" = "Rural"),
-                                                                selected = "Urban")
+                                                               choices = unique(pivot_longer_vehicle$state), selected = "Alabama"),  
+                                                   radioButtons(inputId = "vehicle_radio", label = h3("County Classification:"),
+                                                                choiceNames = list("1/2 Mile", "1 Mile", "10 Miles", "20 Miles"),
+                                                                choiceValues = list("vehicle_half", "vehicle1", "vehicle10", "vehicle20"),
+                                                                selected = "vehicle_half")
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        tableOutput("vehicle_access_table")) #end mainPanel
+                                        plotOutput("vehicle_access")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
                            
@@ -226,21 +230,34 @@ server <- function(input, output) {
   #   vehicles_plot()
   # })
   
-  vehicle_access_table <- reactive({
-    vehicle_state_urb <- vehicle_food %>% 
-      filter(state == input$state4, 
-             urban == input$urban_radio) %>% 
-      select(-state, -urban, -tot_pop, -sum_tract)
+  # vehicle_access_table <- reactive({
+  #   vehicle_state_urb <- vehicle_food %>% 
+  #     filter(state == input$state4, 
+  #            urban == input$urban_radio) %>% 
+  #     select(-state, -urban, -tot_pop, -sum_tract)
+  # })
+  # 
+  # output$vehicle_access_table <- renderTable({
+  #   vehicle_access_table()
+  # })
+  
+  vehicle_access <- reactive({
+    vehicle_access_data <- pivot_longer_vehicle %>% 
+      filter(state == input$state4,
+             name == input$vehicle_radio)
+    
+      ggplot(data = vehicle_access_data, 
+             aes(x = value, y = tot_pop)) +
+      geom_point()
   })
   
-  output$vehicle_access_table <- renderTable({
-    vehicle_access_table()
-  })
+  output$vehicle_access <- renderPlot({
+    vehicle_access()
+    })
   
   # About Page
   state_map <- reactive({
     tmap_mode(mode = "view")
-    
         state_tmap <- tm_shape(state_subset_sf) +
       tm_fill("state") +
       tm_borders(col = "black")
