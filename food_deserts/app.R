@@ -248,7 +248,9 @@ server <- function(input, output) {
     
       ggplot(data = vehicle_access_data, 
              aes(x = value, y = tot_pop)) +
-      geom_point()
+      geom_point(aes(color = county,shape = urban)) +
+        scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
+        theme(legend.position = "none")
   })
   
   output$vehicle_access <- renderPlot({
