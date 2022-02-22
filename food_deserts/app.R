@@ -90,7 +90,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                                selected = "Alabama")
                                       ), #end sidebarPanel 2
                                       mainPanel(
-                                        # tableOutput(outputId = "state_pop_table"),
+                                        tableOutput(outputId = "state_pop_table"),
                                         # tableOutput(outputId = "income_snap_table")
                                         ) #end mainPanel
                                     ) # end sidebarLayout 2
@@ -166,19 +166,19 @@ server <- function(input, output) {
     county_map()
   })
   
-  # state_pop_table <- reactive({
-  #   message("Input$state2 = ", input$state2)
-  #   state_fa <- food_access %>% 
-  #   filter(state == input$state2) %>% 
-  #     summarize(total_pop = sum(pop2010),
-  #               total_snap = sum(tract_snap))
-  #   print(state_fa)
-  #   return(state_fa)
-  # })
-  # output$state_pop_table <- renderTable({
-  #   message("message 2")
-  #   state_pop_table()
-  # })
+  state_pop_table <- reactive({
+    message("Input$state2 = ", input$state2)
+    state_fa <- food_access %>%
+    filter(state == input$state2) %>%
+      summarize(total_pop = sum(pop2010),
+                total_snap = sum(tract_snap))
+    print(state_fa)
+    return(state_fa)
+  })
+  output$state_pop_table <- renderTable({
+    message("message 2")
+    state_pop_table()
+  })
   # 
   # income_snap_table <- reactive({
   #   message("Income-snap table reactive")
@@ -209,39 +209,6 @@ server <- function(input, output) {
   
   
   # widget 4 output
-  
-  # Creating subset for vehicle access 
-  # vehicle_access <- reactive({
-  #   vehicles <- food_access %>%
-  #     select(state, lapophalf, lapop1, lapop10, lapop20, tract_hunv) %>%
-  #     filter(state == input$state4) %>%
-  #     select(sum_half == input$distance_radio) %>%
-  #     group_by(state) %>%
-  #     summarize(sum_half = sum(lapophalf),
-  #               sum_1 = sum(lapop1),
-  #               sum_10 = sum(lapop10),
-  #               sum_20 = sum(lapop20),
-  #               housing_units = sum(tract_hunv))
-  # 
-  #   vehicles_plot <- ggplot(vehicles, aes(x = housing_units, y = sum_half)) +
-  #     geom_point(aes(color = state)) +
-  #     theme_minimal()
-  # })
-  # 
-  # output$vehicle_plot <- renderPlot({
-  #   vehicles_plot()
-  # })
-  
-  # vehicle_access_table <- reactive({
-  #   vehicle_state_urb <- vehicle_food %>% 
-  #     filter(state == input$state4, 
-  #            urban == input$urban_radio) %>% 
-  #     select(-state, -urban, -tot_pop, -sum_tract)
-  # })
-  # 
-  # output$vehicle_access_table <- renderTable({
-  #   vehicle_access_table()
-  # })
   
   vehicle_access <- reactive({
     vehicle_access_data <- pivot_longer_vehicle %>% 
@@ -277,65 +244,3 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
-# # white
-# eth_white_sub <- food_access %>% 
-#   select(state, urban, lawhitehalf, lawhite1, lawhite10, lawhite20) %>% 
-#   group_by(state) %>% 
-#   summarize(sum_white_half = sum(lawhitehalf),
-#             sum_white_1 = sum(lawhite1),
-#             sum_white_10 = sum(lawhite10),
-#             sum_white_20 = sum(lawhite20))
-# 
-# # black
-# eth_black_sub <- food_access %>% 
-#   select(state, urban, lablackhalf, lablack1, lablack10, lablack20) %>% 
-#   group_by(state) %>% 
-#   summarize(sum_black_half = sum(lablackhalf),
-#             sum_black_1 = sum(lablack1),
-#             sum_black_10 = sum(lablack10),
-#             sum_black_20 = sum(lablack20))
-# 
-# #asian
-# eth_asian_sub <- food_access %>% 
-#   select(state, urban, laasianhalf, laasian1, laasian10, laasian20) %>% 
-#   group_by(state) %>% 
-#   summarize(sum_asian_half = sum(laasianhalf),
-#             sum_asian_1 = sum(laasian1),
-#             sum_asian_10 = sum(laasian10),
-#             sum_asian_20 = sum(laasian20))
-# 
-# # Native Hawaiian or other Pacific Islander
-# eth_nhopi_sub <- food_access %>% 
-#   select(state, urban, lanhopihalf, lanhopi1, lanhopi10, lanhopi20) %>% 
-#   group_by(state) %>% 
-#   summarize(sum_nhopi_half = sum(lanhopihalf),
-#             sum_nhopi_1 = sum(lanhopi1),
-#             sum_nhopi_10 = sum(lanhopi10),
-#             sum_nhopi_20 = sum(lanhopi20))
-# 
-# # American Indian or Alaska Native
-# eth_aian_sub <- food_access %>% 
-#   select(state, urban, laaianhalf, laaian1, laaian10, laaian20) %>% 
-#   group_by(state) %>% 
-#   summarize(sum_aian_half = sum(laaianhalf),
-#             sum_aian_1 = sum(laaian1),
-#             sum_aian_10 = sum(laaian10),
-#             sum_aian_20 = sum(laaian20))
-# 
-# # Hispanic
-# eth_hisp_sub <- food_access %>% 
-#   select(state, urban, lahisphalf, lahisp1, lahisp10, lahisp20) %>% 
-#   group_by(state) %>% 
-#   summarize(sum_hisp_half = sum(lahisphalf),
-#             sum_hisp_1 = sum(lahisp1),
-#             sum_hisp_10 = sum(lahisp10),
-#             sum_hisp_20 = sum(lahisp20))
-# 
-# eth_omultir_sub <- food_access %>% 
-#   select(state, urban, laomultirhalf, laomultir1, laomultir10, laomultir20) %>% 
-#   group_by(state) %>% 
-#   summarize(sum_omultir_half = sum(laomultirhalf),
-#             sum_omultir_1 = sum(laomultir1),
-#             sum_omultir_10 = sum(laomultir10),
-#             sum_omultir_20 = sum(laomultir20))
