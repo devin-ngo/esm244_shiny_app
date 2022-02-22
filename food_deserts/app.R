@@ -49,8 +49,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                            tabPanel("W2 - Income Range",
                                     sidebarLayout(
                                       sidebarPanel("Tracking access by median family income",
-                                                   sliderInput(inputId = "median_family_income", label = h3("Income Range (in thousands USD)"), min = 0, 
-                                                               max = 250, value = c(50, 100)),
+                                                   sliderInput(inputId = "income_slider", label = h3("Income Range"), min = 0, 
+                                                               max = 250000, value = c(0, 250000)),
                                                    selectInput(inputId = "state2", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama")  
                                       ), #end sidebarPanel 2
@@ -147,7 +147,10 @@ server <- function(input, output) {
    
   income_snap_table <- reactive({
     food_access %>%
-      filter(median_family_income == input$median_family_income, state == input$state2) %>%
+      filter(state == input$state2) %>%
+      filter(
+        median_family_income >= input$income_slider[1], 
+        median_family_income <= input$income_slider[2]) %>%
       group_by(county) %>% 
       summarize(mean_SNAP = mean(tract_snap))
   })
