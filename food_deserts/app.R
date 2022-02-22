@@ -69,25 +69,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                       sidebarPanel("Tracking access by median family income",
                                                    sliderInput(inputId = "median_family_income", label = h3("Income Range (in thousands USD)"), min = 0, 
                                                                max = 250, value = c(50, 100)),
-                                                   selectInput(inputId = "state2", label = h3("Select State"), 
-                                                               choices = list("Alabama", "Alaska", "Arizona", 
-                                                                              "Arkansas", "California", "Colorado",
-                                                                              "Connecticut", "Delaware", "Florida",
-                                                                              "Georgia", "Hawaii", "Idaho",
-                                                                              "Illinois", "Indiana", "Iowa",
-                                                                              "Kansas", "Kentucky", "Louisiana",
-                                                                              "Maine", "Maryland", "Massachusetts",
-                                                                              "Michigan", "Minnesota", "Mississippi",
-                                                                              "Missouri", "Montana", "Nebraska",
-                                                                              "Nevada", "New Hampshire", "New Jersey",
-                                                                              "New Mexico", "New York", "North Carolina",
-                                                                              "North Dakota", "Ohio", "Oklahoma",
-                                                                              "Oregon", "Pennsylvania", "Rhode Island",
-                                                                              "South Carolina", "South Dakota", "Tennessee",
-                                                                              "Texas", "Utah", "Vermont",
-                                                                              "Virginia", "Washington", "West Virginia",
-                                                                              "Wisconsin", "Wyoming"),
-                                                               selected = "Alabama")
+                                                   selectInput(inputId = "state2", label = h3("Select State"),
+                                                               choices = unique(food_access$state), selected = "Alabama")  
                                       ), #end sidebarPanel 2
                                       mainPanel(
                                         tableOutput(outputId = "state_pop_table"),
