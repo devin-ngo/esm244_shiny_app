@@ -56,7 +56,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                       ), #end sidebarPanel 2
                                       mainPanel(
                                         tableOutput(outputId = "state_pop_table"),
-                                        # tableOutput(outputId = "income_snap_table")
+                                        tableOutput(outputId = "income_snap_table")
                                         ) #end mainPanel
                                     ) # end sidebarLayout 2
                            ), #End tabPanel 2
@@ -148,7 +148,12 @@ server <- function(input, output) {
   income_snap_table <- reactive({
     food_access %>%
       filter(median_family_income == input$median_family_income, state == input$state2) %>%
-      select(county)
+      group_by(county) %>% 
+      summarize(mean_SNAP = mean(tract_snap))
+  })
+  
+  output$income_snap_table <- renderTable({
+    income_snap_table()
   })
   
   # income_snap_table <- reactive({
