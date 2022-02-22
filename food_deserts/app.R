@@ -29,7 +29,10 @@ vehicle_food <- read_csv(here("data", "vehicle_food_subset.csv"))
 pivot_longer_vehicle <- vehicle_food %>% 
   pivot_longer(vehicle_half:vehicle20)
 
-ethnicity <- read_csv(here("data","ethnicity_subset.csv"))
+ethnicity <- read_csv(here("data","ethnicity_subset.csv")) %>% 
+  filter(eth_dist %in% c("sum_white_10", "sum_black_10", "sum_asian_10",
+                         "sum_nhopi_10", "sum_aian_10", "sum_hisp_10",
+                         "sum_omultir_10"))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
@@ -67,13 +70,16 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                    selectInput(inputId = "state3", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
                                                    checkboxGroupInput(inputId = "ethnicity_check", label = h3("Ethnicity"),
-                                                                      choices = list("American Indian and Alaska Native" = 1, "Asian" = 2, "Black or African American" = 3,
-                                                                                     "Hispanic or Latino" = 4, "Native Hawaiian and Other Pacific Islander" = 5,
-                                                                                     "White" = 6, "Other/Multiple Race Population" = 7),
-                                                                      selected = 1)
+                                                                      choices = c("White" = "sum_white_10","Black or African American" = "sum_black_10", 
+                                                                                  "Asian" = "sum_asian_10", "Native Hawaiian or Other Pacific Islander" = "sum_nhopi_10", 
+                                                                                  "American Indian or Alaska Native" = "sum_aian_10", "Hispanic or Latino"= "sum_hisp_10",
+                                                                                  "Other/Multiple Race" = "sum_omultir_10"),
+                                                                      selected = c("sum_white_10", "sum_black_10", "sum_asian_10",
+                                                                                   "sum_nhopi_10", "sum_aian_10", "sum_hisp_10",
+                                                                                   "sum_omultir_10"))
                                       ), #end sidebarPanel 3
                                       mainPanel(
-                                        plotOutput("distPlot")) #end mainPanel
+                                        plotOutput("ethn_plot")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 3
 
@@ -161,7 +167,22 @@ server <- function(input, output) {
 
   # Widget 3 output
   
-  
+  # ethn_plot <- reactive({
+  #   eth_10 <- ethnicity %>% 
+  #     filter(state == input$state3) %>% 
+  #     filter(eth_dist == input$ethnicity_check)
+  #   
+  #   ggplot(data = eth_10,
+  #          aes(x = eth_dist, y = count)) +
+  #     geom_col() +
+  #     coord_flip() + 
+  #     scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+  # })
+  # 
+  # output$ethn_plot <- renderPlot({
+  #   ethn_plot()
+  # })
+  # 
   
   # widget 4 output
   
