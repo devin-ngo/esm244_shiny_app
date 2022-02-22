@@ -158,31 +158,7 @@ server <- function(input, output) {
   output$income_snap_table <- renderTable({
     income_snap_table()
   })
-  
-  # income_snap_table <- reactive({
-  #   message("Income-snap table reactive")
-  #   food_access %>% 
-  #     filter(median_family_income == input$median_family_income, state == input$state2) %>% 
-  #     mutate(median_family_income = case_when(
-  #       input$median_family_income >= "0" & input$median_family_income < "25000" ~ "1",
-  #       input$median_family_income >= "25000" & input$median_family_income < "50000" ~ "2",
-  #       input$median_family_income >= "50000" & input$median_family_income < "75000" ~ "3",
-  #       input$median_family_income >= "75000" & input$median_family_income < "100000" ~ "4",
-  #       input$median_family_income >= "100000" & input$median_family_income < "125000" ~ "5",
-  #       input$median_family_income >= "125000" & input$median_family_income < "150000" ~ "6",
-  #       input$median_family_income >= "150000" & input$median_family_income < "175000" ~ "7",
-  #       input$median_family_income >= "175000" & input$median_family_income < "200000" ~ "8",
-  #       input$median_family_income >= "200000" & input$median_family_income < "225000" ~ "9",
-  #       input$median_family_income >= "225000" & input$median_family_income <= "250000" ~ "10"
-  #     )) %>% 
-  #     group_by(median_family_income) %>% 
-  #     summarize(mean_SNAP = mean(tract_snap))
-  # })
-  # output$income_snap_table <- renderTable({ 
-  #   message("render table")
-  #   income_snap_table() })
-  
-  
+
   # Widget 3 output
   
   
