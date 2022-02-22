@@ -31,6 +31,68 @@ pivot_longer_vehicle <- vehicle_food %>%
 
 ethnicity <- read_csv(here("data","ethnicity_subset.csv"))
 
+ethnicity_sub <- ethnicity %>% 
+  mutate(dist_eth = case_when(
+    eth_dist == "sum_nhopi_half" ~ "half",
+    eth_dist == "sum_asian_half" ~ "half",
+    eth_dist == "sum_black_half" ~ "half",
+    eth_dist == "sum_hisp_half" ~ "half",
+    eth_dist == "sum_aian_half" ~ "half",
+    eth_dist == "sum_white_half" ~ "half",
+    eth_dist == "sum_omultir_half" ~ "half",
+    eth_dist == "sum_nhopi_1" ~ "1",
+    eth_dist == "sum_asian_1" ~ "1",
+    eth_dist == "sum_black_1" ~ "1",
+    eth_dist == "sum_hisp_1" ~ "1",
+    eth_dist == "sum_aian_1" ~ "1",
+    eth_dist == "sum_white_1" ~ "1",
+    eth_dist == "sum_omultir_1" ~ "1",
+    eth_dist == "sum_nhopi_10" ~ "10",
+    eth_dist == "sum_asian_10" ~ "10",
+    eth_dist == "sum_black_10" ~ "10",
+    eth_dist == "sum_hisp_10" ~ "10",
+    eth_dist == "sum_aian_10" ~ "10",
+    eth_dist == "sum_white_10" ~ "10",
+    eth_dist == "sum_omultir_10" ~ "10",
+    eth_dist == "sum_nhopi_20" ~ "20",
+    eth_dist == "sum_asian_20" ~ "20",
+    eth_dist == "sum_black_20" ~ "20",
+    eth_dist == "sum_hisp_20" ~ "20",
+    eth_dist == "sum_aian_20" ~ "20",
+    eth_dist == "sum_white_20" ~ "20",
+    eth_dist == "sum_omultir_20" ~ "20"
+  )) %>% 
+  mutate(ethnicity = case_when(
+    eth_dist == "sum_nhopi_half" ~ "nhopi",
+    eth_dist == "sum_asian_half" ~ "asian",
+    eth_dist == "sum_black_half" ~ "black",
+    eth_dist == "sum_hisp_half" ~ "hisp",
+    eth_dist == "sum_aian_half" ~ "aian",
+    eth_dist == "sum_white_half" ~ "white",
+    eth_dist == "sum_omultir_half" ~ "omultir",
+    eth_dist == "sum_nhopi_1" ~ "nhopi",
+    eth_dist == "sum_asian_1" ~ "asian",
+    eth_dist == "sum_black_1" ~ "black",
+    eth_dist == "sum_hisp_1" ~ "hisp",
+    eth_dist == "sum_aian_1" ~ "aian",
+    eth_dist == "sum_white_1" ~ "white",
+    eth_dist == "sum_omultir_1" ~ "omultir",
+    eth_dist == "sum_nhopi_10" ~ "nhopi",
+    eth_dist == "sum_asian_10" ~ "asian",
+    eth_dist == "sum_black_10" ~ "black",
+    eth_dist == "sum_hisp_10" ~ "hisp",
+    eth_dist == "sum_aian_10" ~ "aian",
+    eth_dist == "sum_white_10" ~ "white",
+    eth_dist == "sum_omultir_10" ~ "omultir",
+    eth_dist == "sum_nhopi_20" ~ "nhopi",
+    eth_dist == "sum_asian_20" ~ "asian",
+    eth_dist == "sum_black_20" ~ "black",
+    eth_dist == "sum_hisp_20" ~ "hisp",
+    eth_dist == "sum_aian_20" ~ "aian",
+    eth_dist == "sum_white_20" ~ "white",
+    eth_dist == "sum_omultir_20" ~ "omultir"
+  ))
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
                 titlePanel("Food Deserts in America "), # Application title 
@@ -70,8 +132,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                                       choices = c("White" = "white","Black or African American" = "black", 
                                                                                   "Asian" = "asian", "Native Hawaiian or Other Pacific Islander" = "nhopi", 
                                                                                   "American Indian or Alaska Native" = "aian", "Hispanic or Latino"= "hisp",
-                                                                                  "Other/Multiple Race" = "omultir"),
-                                                                      selected = c("white"))
+                                                                                  "Other or Multiple Race" = "omultir"),
+                                                                      selected = c("white", "black", "asian"))
                                       ), #end sidebarPanel 3
                                       mainPanel(
                                         plotOutput("eth_plot")) #end mainPanel
@@ -163,70 +225,9 @@ server <- function(input, output) {
   # Widget 3 output
   
   eth_plot <- reactive({
-    eth_table <- ethnicity %>% 
+    eth_table <- ethnicity_sub %>% 
       filter(state == input$state3) %>% 
-      mutate(dist_eth = case_when(
-        eth_dist == "sum_nhopi_half" ~ "half",
-        eth_dist == "sum_asian_half" ~ "half",
-        eth_dist == "sum_black_half" ~ "half",
-        eth_dist == "sum_hisp_half" ~ "half",
-        eth_dist == "sum_aian_half" ~ "half",
-        eth_dist == "sum_white_half" ~ "half",
-        eth_dist == "sum_omultir_half" ~ "half",
-        eth_dist == "sum_nhopi_1" ~ "1",
-        eth_dist == "sum_asian_1" ~ "1",
-        eth_dist == "sum_black_1" ~ "1",
-        eth_dist == "sum_hisp_1" ~ "1",
-        eth_dist == "sum_aian_1" ~ "1",
-        eth_dist == "sum_white_1" ~ "1",
-        eth_dist == "sum_omultir_1" ~ "1",
-        eth_dist == "sum_nhopi_10" ~ "10",
-        eth_dist == "sum_asian_10" ~ "10",
-        eth_dist == "sum_black_10" ~ "10",
-        eth_dist == "sum_hisp_10" ~ "10",
-        eth_dist == "sum_aian_10" ~ "10",
-        eth_dist == "sum_white_10" ~ "10",
-        eth_dist == "sum_omultir_10" ~ "10",
-        eth_dist == "sum_nhopi_20" ~ "20",
-        eth_dist == "sum_asian_20" ~ "20",
-        eth_dist == "sum_black_20" ~ "20",
-        eth_dist == "sum_hisp_20" ~ "20",
-        eth_dist == "sum_aian_20" ~ "20",
-        eth_dist == "sum_white_20" ~ "20",
-        eth_dist == "sum_omultir_20" ~ "20"
-        )) %>% 
-      mutate(ethnicity = case_when(
-        eth_dist == "sum_nhopi_half" ~ "nhopi",
-        eth_dist == "sum_asian_half" ~ "asian",
-        eth_dist == "sum_black_half" ~ "black",
-        eth_dist == "sum_hisp_half" ~ "hisp",
-        eth_dist == "sum_aian_half" ~ "aian",
-        eth_dist == "sum_white_half" ~ "white",
-        eth_dist == "sum_omultir_half" ~ "omultir",
-        eth_dist == "sum_nhopi_1" ~ "nhopi",
-        eth_dist == "sum_asian_1" ~ "asian",
-        eth_dist == "sum_black_1" ~ "black",
-        eth_dist == "sum_hisp_1" ~ "hisp",
-        eth_dist == "sum_aian_1" ~ "aian",
-        eth_dist == "sum_white_1" ~ "white",
-        eth_dist == "sum_omultir_1" ~ "omultir",
-        eth_dist == "sum_nhopi_10" ~ "nhopi",
-        eth_dist == "sum_asian_10" ~ "asian",
-        eth_dist == "sum_black_10" ~ "black",
-        eth_dist == "sum_hisp_10" ~ "hisp",
-        eth_dist == "sum_aian_10" ~ "aian",
-        eth_dist == "sum_white_10" ~ "white",
-        eth_dist == "sum_omultir_10" ~ "omultir",
-        eth_dist == "sum_nhopi_20" ~ "nhopi",
-        eth_dist == "sum_asian_20" ~ "asian",
-        eth_dist == "sum_black_20" ~ "black",
-        eth_dist == "sum_hisp_20" ~ "hisp",
-        eth_dist == "sum_aian_20" ~ "aian",
-        eth_dist == "sum_white_20" ~ "white",
-        eth_dist == "sum_omultir_20" ~ "omultir"
-      )) %>% 
       filter(ethnicity == input$ethnicity_check)
-    
     
       ggplot(data = eth_table,
              aes(x = ethnicity, y = count)) +
