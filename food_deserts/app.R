@@ -70,16 +70,16 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                    selectInput(inputId = "state3", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
                                                    checkboxGroupInput(inputId = "ethnicity_check", label = h3("Ethnicity"),
-                                                                      choices = c("White" = "sum_white_10","Black or African American" = "sum_black_10", 
-                                                                                  "Asian" = "sum_asian_10", "Native Hawaiian or Other Pacific Islander" = "sum_nhopi_10", 
-                                                                                  "American Indian or Alaska Native" = "sum_aian_10", "Hispanic or Latino"= "sum_hisp_10",
-                                                                                  "Other/Multiple Race" = "sum_omultir_10"),
-                                                                      selected = c("sum_white_10", "sum_black_10", "sum_asian_10",
-                                                                                   "sum_nhopi_10", "sum_aian_10", "sum_hisp_10",
-                                                                                   "sum_omultir_10"))
+                                                                      choices = c("White" = "white","Black or African American" = "black", 
+                                                                                  "Asian" = "asian", "Native Hawaiian or Other Pacific Islander" = "nhopi", 
+                                                                                  "American Indian or Alaska Native" = "aian", "Hispanic or Latino"= "hisp",
+                                                                                  "Other/Multiple Race" = "omultir"),
+                                                                      selected = c("white", "black", "asian",
+                                                                                   "nhopi", "aian", "hisp",
+                                                                                   "omultir"))
                                       ), #end sidebarPanel 3
                                       mainPanel(
-                                        plotOutput("ethn_plot")) #end mainPanel
+                                        plotOutput("eth_plot")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 3
 
@@ -166,6 +166,83 @@ server <- function(input, output) {
   })
 
   # Widget 3 output
+  
+  eth_plot <- reactive({
+    eth_table <- ethnicity %>% 
+      filter(state == input$state3) %>% 
+      mutate(dist = case_when(
+        eth_dist == "sum_nhopi_half" ~ "half",
+        eth_dist == "sum_asian_half" ~ "half",
+        eth_dist == "sum_black_half" ~ "half",
+        eth_dist == "sum_hisp_half" ~ "half",
+        eth_dist == "sum_aian_half" ~ "half",
+        eth_dist == "sum_white_half" ~ "half",
+        eth_dist == "sum_omultir_half" ~ "half",
+        eth_dist == "sum_nhopi_1" ~ "1",
+        eth_dist == "sum_asian_1" ~ "1",
+        eth_dist == "sum_black_1" ~ "1",
+        eth_dist == "sum_hisp_1" ~ "1",
+        eth_dist == "sum_aian_1" ~ "1",
+        eth_dist == "sum_white_1" ~ "1",
+        eth_dist == "sum_omultir_1" ~ "1",
+        eth_dist == "sum_nhopi_10" ~ "10",
+        eth_dist == "sum_asian_10" ~ "10",
+        eth_dist == "sum_black_10" ~ "10",
+        eth_dist == "sum_hisp_10" ~ "10",
+        eth_dist == "sum_aian_10" ~ "10",
+        eth_dist == "sum_white_10" ~ "10",
+        eth_dist == "sum_omultir_10" ~ "10",
+        eth_dist == "sum_nhopi_20" ~ "20",
+        eth_dist == "sum_asian_20" ~ "20",
+        eth_dist == "sum_black_20" ~ "20",
+        eth_dist == "sum_hisp_20" ~ "20",
+        eth_dist == "sum_aian_20" ~ "20",
+        eth_dist == "sum_white_20" ~ "20",
+        eth_dist == "sum_omultir_20" ~ "20"
+        )) %>% 
+      mutate(ethnicity = case_when(
+        eth_dist == "sum_nhopi_half" ~ "nhopi",
+        eth_dist == "sum_asian_half" ~ "asian",
+        eth_dist == "sum_black_half" ~ "black",
+        eth_dist == "sum_hisp_half" ~ "hisp",
+        eth_dist == "sum_aian_half" ~ "aian",
+        eth_dist == "sum_white_half" ~ "white",
+        eth_dist == "sum_omultir_half" ~ "omultir",
+        eth_dist == "sum_nhopi_1" ~ "nhopi",
+        eth_dist == "sum_asian_1" ~ "asian",
+        eth_dist == "sum_black_1" ~ "black",
+        eth_dist == "sum_hisp_1" ~ "hisp",
+        eth_dist == "sum_aian_1" ~ "aian",
+        eth_dist == "sum_white_1" ~ "white",
+        eth_dist == "sum_omultir_1" ~ "omultir",
+        eth_dist == "sum_nhopi_10" ~ "nhopi",
+        eth_dist == "sum_asian_10" ~ "asian",
+        eth_dist == "sum_black_10" ~ "black",
+        eth_dist == "sum_hisp_10" ~ "hisp",
+        eth_dist == "sum_aian_10" ~ "aian",
+        eth_dist == "sum_white_10" ~ "white",
+        eth_dist == "sum_omultir_10" ~ "omultir",
+        eth_dist == "sum_nhopi_20" ~ "nhopi",
+        eth_dist == "sum_asian_20" ~ "asian",
+        eth_dist == "sum_black_20" ~ "black",
+        eth_dist == "sum_hisp_20" ~ "hisp",
+        eth_dist == "sum_aian_20" ~ "aian",
+        eth_dist == "sum_white_20" ~ "white",
+        eth_dist == "sum_omultir_20" ~ "omultir"
+      )) %>% 
+      filter(ethnicity == input$ethnicity_check)
+    
+    
+      ggplot(data = eth_table,
+             aes(x = ethnicity, y = count)) +
+      geom_col() +
+      coord_flip() +
+      scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+  })
+  
+  output$eth_plot <- renderPlot({
+    eth_plot()
+  })
   
   # ethn_plot <- reactive({
   #   eth_10 <- ethnicity %>% 
