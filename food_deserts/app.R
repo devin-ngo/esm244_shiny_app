@@ -29,10 +29,7 @@ vehicle_food <- read_csv(here("data", "vehicle_food_subset.csv"))
 pivot_longer_vehicle <- vehicle_food %>% 
   pivot_longer(vehicle_half:vehicle20)
 
-ethnicity <- read_csv(here("data","ethnicity_subset.csv")) %>% 
-  filter(eth_dist %in% c("sum_white_10", "sum_black_10", "sum_asian_10",
-                         "sum_nhopi_10", "sum_aian_10", "sum_hisp_10",
-                         "sum_omultir_10"))
+ethnicity <- read_csv(here("data","ethnicity_subset.csv"))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
@@ -74,9 +71,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                                                   "Asian" = "asian", "Native Hawaiian or Other Pacific Islander" = "nhopi", 
                                                                                   "American Indian or Alaska Native" = "aian", "Hispanic or Latino"= "hisp",
                                                                                   "Other/Multiple Race" = "omultir"),
-                                                                      selected = c("white", "black", "asian",
-                                                                                   "nhopi", "aian", "hisp",
-                                                                                   "omultir"))
+                                                                      selected = c("white"))
                                       ), #end sidebarPanel 3
                                       mainPanel(
                                         plotOutput("eth_plot")) #end mainPanel
@@ -170,7 +165,7 @@ server <- function(input, output) {
   eth_plot <- reactive({
     eth_table <- ethnicity %>% 
       filter(state == input$state3) %>% 
-      mutate(dist = case_when(
+      mutate(dist_eth = case_when(
         eth_dist == "sum_nhopi_half" ~ "half",
         eth_dist == "sum_asian_half" ~ "half",
         eth_dist == "sum_black_half" ~ "half",
@@ -235,9 +230,7 @@ server <- function(input, output) {
     
       ggplot(data = eth_table,
              aes(x = ethnicity, y = count)) +
-      geom_col() +
-      coord_flip() +
-      scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+      geom_jitter()
   })
   
   output$eth_plot <- renderPlot({
