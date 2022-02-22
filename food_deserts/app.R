@@ -146,8 +146,8 @@ server <- function(input, output) {
   })
    
   income_snap_table <- reactive({
-    food_access %>% 
-      filter(median_family_income == input$median_family_income, state == input$state2) %>% 
+    food_access %>%
+      filter(median_family_income == input$median_family_income, state == input$state2) %>%
       select(county)
   })
   
