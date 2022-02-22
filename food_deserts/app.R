@@ -97,35 +97,55 @@ ethnicity_sub <- ethnicity %>%
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
                 titlePanel("Food Deserts in America "), # Application title 
                 navbarPage("Food Access Tools",
+                           tabPanel("Introduction",
+                                    sidebarLayout(
+                                      sidebarPanel("Developed by Kiera Matiska and Devin Ngo, Master's Candidates at the Bren School
+                                                   of Environmental Science and Management. Data is from the Food Access Research Atlas 
+                                                   and compiled by user @Tim Crammond on Kaggle. 
+                                                   The data can be retrieved from: https://www.kaggle.com/tcrammond /food-access-and-food-deserts"
+                                      ), # end sidebarPanel 1
+                                      mainPanel(h5("This app is focused on examining food deserts in the US and 
+                                                   how factors such as income and ethnicity play a role in the distance of individuals 
+                                                   are located from supermarkets. We hope to shed a light on the issue of food insecurity
+                                                   and how changes need to be made to improve access to food for disadvantaged communities. 
+                                                   The first widget takes a look at the breakdown of counties by state and rural/urban designations. 
+                                                   The second examines median family income and SNAP benefits by state and county. The third widget 
+                                                   breaks down access tracts to the nearest supermarket by ethnicity and mileage. 
+                                                   The final widget looks at how many housing units do not own a vehicle within a certain 
+                                                   distance from the nearest supermarket"),
+                                                plotOutput("state_map")) #end mainPanel 1
+                                    ) # end sidebarLayout 1
+                           ), #end tabPanel 1
                            tabPanel("W1 - Rural/Urban Breakdown",
                                     sidebarLayout(
-                                      sidebarPanel("Breakdown of rural and urban areas by state", #end sidebar panel
+                                      sidebarPanel("Interactive map visualization of rural and urban areas by state and county", #end sidebar panel
                                                    selectInput(inputId = "state", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama") # end select input
-                                    ), # end sidebarPanel 1
+                                    ), # end sidebarPanel 2
                                     mainPanel(
                                       tmapOutput("county_map"))
-                                    ) #End sidebarLayout 1
-                           ), #End Tab 1
+                                    ) #End sidebarLayout 2
+                           ), #End Tab 2
                            
                            tabPanel("W2 - Income Range",
                                     sidebarLayout(
-                                      sidebarPanel("Tracking access by median family income",
+                                      sidebarPanel("Interactive tables detailing state population, SNAP benefits, and median family income",
                                                    sliderInput(inputId = "income_slider", label = h3("Income Range"), min = 0, 
                                                                max = 250000, value = c(0, 250000)),
                                                    selectInput(inputId = "state2", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama")  
-                                      ), #end sidebarPanel 2
+                                      ), #end sidebarPanel 3
                                       mainPanel(
                                         tableOutput(outputId = "state_pop_table"),
                                         tableOutput(outputId = "income_snap_table")
                                         ) #end mainPanel
-                                    ) # end sidebarLayout 2
-                           ), #End tabPanel 2
+                                    ) # end sidebarLayout 3
+                           ), #End tabPanel 3
                            
                            tabPanel("W3 - Ethnicity Checkbox",
                                     sidebarLayout(
-                                      sidebarPanel("Distance from a supermarket based on ethnicity group",
+                                      sidebarPanel("Interactive plot visualizing ethnicty groups and population counts 
+                                                   that are certain distances from the nearest supermarket",
                                                    selectInput(inputId = "state3", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
                                                    checkboxGroupInput(inputId = "ethnicity_check", label = h3("Ethnicity"),
@@ -134,38 +154,28 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                                                   "American Indian or Alaska Native" = "aian", "Hispanic or Latino"= "hisp",
                                                                                   "Other or Multiple Race" = "omultir"),
                                                                       selected = c("white", "black", "asian"))
-                                      ), #end sidebarPanel 3
+                                      ), #end sidebarPanel 4
                                       mainPanel(
                                         plotOutput("eth_plot")) #end mainPanel
                                     ) #end sidebar Layout
-                           ), #end tabPanel 3
+                           ), #end tabPanel 4
 
                            tabPanel("W4 - Access Tracts",
                                     sidebarLayout(
-                                      sidebarPanel("Low access tracts based on miles from supermarket",
+                                      sidebarPanel("Interactive scatterplot visualizing the total population count
+                                                   vs the number of households without a vehicle at certain distances
+                                                   from the nearest supermarket",
                                                    selectInput(inputId = "state4", label = h3("Select State"),
                                                                choices = unique(pivot_longer_vehicle$state), selected = "Alabama"),  
                                                    radioButtons(inputId = "vehicle_radio", label = h3("County Classification:"),
                                                                 choiceNames = list("1/2 Mile", "1 Mile", "10 Miles", "20 Miles"),
                                                                 choiceValues = list("vehicle_half", "vehicle1", "vehicle10", "vehicle20"),
                                                                 selected = "vehicle_half")
-                                      ), #end sidebarPanel 4
+                                      ), #end sidebarPanel 5
                                       mainPanel(
                                         plotOutput("vehicle_access")) #end mainPanel
                                     ) #end sidebar Layout
-                           ), #end tabPanel 4
-                           
-                           tabPanel("About Page",
-                                    sidebarLayout(
-                                      sidebarPanel("About this app:"
-                                      ), # end sidebarPanel 5
-                                      mainPanel(h6("This app is focused on examining food deserts in the US and 
-                                                   how factors such as income and ethnicity play a role in the distance of individuals 
-                                                   are located from supermarkets. We hope to shed a light on the issue of food insecurity
-                                                   and how changes need to be made to improve access to food for disadvantaged communities"),
-                                                plotOutput("state_map")) #end mainPanel
-                                    ) # end sidebarLayout
-                                    ) #end tabPanel 5
+                           ) #end tabPanel 5
                            
                 ) #End Navbar Page
 ) # End UI
@@ -231,7 +241,8 @@ server <- function(input, output) {
     
       ggplot(data = eth_table,
              aes(x = ethnicity, y = count)) +
-      geom_jitter()
+      geom_jitter() +
+        labs(x = "Ethnicity", y = "Count")
   })
   
   output$eth_plot <- renderPlot({
@@ -266,7 +277,9 @@ server <- function(input, output) {
              aes(x = value, y = tot_pop)) +
       geom_point(aes(color = county,shape = urban)) +
         scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
-        theme(legend.position = "none")
+        theme(legend.position = "none") +
+        labs(x = "Housing Units Without a Vehicle",
+             y = "Total Population Count")
   })
   
   output$vehicle_access <- renderPlot({
