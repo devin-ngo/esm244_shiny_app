@@ -30,9 +30,7 @@ vehicle_food <- read_csv(here("data", "vehicle_food_subset.csv"))
 pivot_longer_vehicle <- vehicle_food %>% 
   pivot_longer(vehicle_half:vehicle20)
 
-ethnicity_zip <- unzip("ethnicity_subset.csv.zip")
-
-ethnicity <- read_csv("ethnicity_subset.csv")
+ethnicity <- read_csv(here("data","ethnicity_subset.csv"))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
