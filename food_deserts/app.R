@@ -11,8 +11,7 @@ library(janitor)
 library(rasterize)
 
 # Reading in data
-food_access <- read_csv(here("data", "food_access_subset.csv")) %>% 
-  mutate(median_family_income = as.character(median_family_income))
+food_access <- read_csv(here("data", "food_access_subset.csv"))
 
 county_sf <- read_sf(here("data/US_County_Boundaries/US_County_Boundaries.shp")) %>% 
   clean_names()
@@ -145,7 +144,13 @@ server <- function(input, output) {
     message("message 2")
     state_pop_table()
   })
-  # 
+   
+  income_snap_table <- reactive({
+    food_access %>% 
+      filter(median_family_income == input$median_family_income, state == input$state2) %>% 
+      select(county)
+  })
+  
   # income_snap_table <- reactive({
   #   message("Income-snap table reactive")
   #   food_access %>% 
