@@ -93,6 +93,10 @@ ethnicity_sub <- ethnicity %>%
     eth_dist == "sum_omultir_20" ~ "omultir"
   ))
 
+us_map <- img(src = "US_map.png")
+
+desert_stat <- img(src = "food_deserts_stat.png")
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
                 titlePanel("Food Deserts in America "), # Application title 
@@ -189,11 +193,11 @@ server <- function(input, output) {
   })
   
   food_deserts_fig <- reactive({
-    img(src = "food_deserts_stats.png")
+    print(desert_stat)
   })
   
   us_pic <- reactive({
-    img(src = "US_map.png")
+    print(us_map)
   })
   
   introduction_text2 <- reactive({                                    
