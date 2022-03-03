@@ -33,13 +33,13 @@ ethnicity <- read_csv(here("data","ethnicity_subset.csv"))
 
 ethnicity_sub <- ethnicity %>% 
   mutate(dist_eth = case_when(
-    eth_dist == "sum_nhopi_half" ~ "half",
-    eth_dist == "sum_asian_half" ~ "half",
-    eth_dist == "sum_black_half" ~ "half",
-    eth_dist == "sum_hisp_half" ~ "half",
-    eth_dist == "sum_aian_half" ~ "half",
-    eth_dist == "sum_white_half" ~ "half",
-    eth_dist == "sum_omultir_half" ~ "half",
+    eth_dist == "sum_nhopi_half" ~ "0.5",
+    eth_dist == "sum_asian_half" ~ "0.5",
+    eth_dist == "sum_black_half" ~ "0.5",
+    eth_dist == "sum_hisp_half" ~ "0.5",
+    eth_dist == "sum_aian_half" ~ "0.5",
+    eth_dist == "sum_white_half" ~ "0.5",
+    eth_dist == "sum_omultir_half" ~ "0.5",
     eth_dist == "sum_nhopi_1" ~ "1",
     eth_dist == "sum_asian_1" ~ "1",
     eth_dist == "sum_black_1" ~ "1",
@@ -98,23 +98,17 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                 titlePanel("Food Deserts in America "), # Application title 
                 navbarPage("Food Access Tools",
                            tabPanel("Introduction",
-                                    sidebarLayout(
-                                      sidebarPanel("Developed by Kiera Matiska and Devin Ngo, Master's Candidates at the Bren School
-                                                   of Environmental Science and Management. Data is from the Food Access Research Atlas 
-                                                   and compiled by user @Tim Crammond on Kaggle. 
-                                                   The data can be retrieved from: https://www.kaggle.com/tcrammond /food-access-and-food-deserts"
-                                      ), # end sidebarPanel 1
-                                      mainPanel(h5("This app is focused on examining food deserts in the US and 
-                                                   how factors such as income and ethnicity play a role in the distance of individuals 
-                                                   are located from supermarkets. We hope to shed a light on the issue of food insecurity
-                                                   and how changes need to be made to improve access to food for disadvantaged communities. 
-                                                   The first widget takes a look at the breakdown of counties by state and rural/urban designations. 
-                                                   The second examines median family income and SNAP benefits by state and county. The third widget 
-                                                   breaks down access tracts to the nearest supermarket by ethnicity and mileage. 
-                                                   The final widget looks at how many housing units do not own a vehicle within a certain 
-                                                   distance from the nearest supermarket"),
-                                                plotOutput("state_map")) #end mainPanel 1
-                                    ) # end sidebarLayout 1
+                                      mainPanel(
+                                        textOutput("introduction_text1"),
+                                        imageOutput("food_deserts_fig"),
+                                        imageOutput("us_pic"),
+                                        textOutput("introduction_text2"),
+                                        textOutput("widget1_text"),
+                                        textOutput("widget2_text"),
+                                        textOutput("widget3_text"),
+                                        textOutput("widget4_text"),
+                                        textOutput("introduction_text3")
+                                    ) # end mainPanel 1
                            ), #end tabPanel 1
                            tabPanel("W1 - Rural/Urban Breakdown",
                                     sidebarLayout(
@@ -182,6 +176,92 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
+  introduction_text1 <- reactive({
+    print("Throughout the United States, food deserts are a major issue. Food deserts are defined as
+           regions where people have limited access to food that is both nutritious and helpful (Jessica
+           Caporuscia, 2020). Limitations can arise due to low-income or distance to the nearest supermarket. 
+           In 2012, the United States Department of Agriculture (USDA) reported that based on the 2000 and 20006
+           census data, there were more than 6,500 food deserts within the U.S. (USDA). Based on the finding of the 
+           report created by the USDA in 2012, they found the most significant factor relating to food deserts
+           is poverty and ethnicity (USDA). Other significant factors are included in this figure produced by the USDA.
+           A map of the United States is included below for reference.")
+  })
+  
+  food_deserts_fig <- reactive({
+    img(src = "food_deserts_stats.png")
+  })
+  
+  us_pic <- reactive({
+    img(src = "US_map.png")
+  })
+  
+  introduction_text2 <- reactive({                                    
+    print("\nThis app is focused on examining food deserts in the US and 
+           how factors such as income and ethnicity play a role in the distance of individuals 
+           from supermarkets. We hope to shed a light on the issue of food insecurity
+           and how changes need to be made to improve access to food for disadvantaged communities.")
+  })
+    
+  widget1_text <- reactive({
+    print("The first widget takes a look at the breakdown of counties by state and rural/urban designations.")
+  })
+  
+  widget2_text <- reactive({
+    print("The second examines median family income and SNAP benefits by state and county.")
+  })
+  
+  widget3_text <- reactive({
+    print("The third widget breaks down access tracts to the nearest supermarket by ethnicity and mileage.")
+  })
+  
+  widget4_text <- reactive({
+    print("The final widget looks at how many housing units do not own a vehicle within a certain 
+           distance from the nearest supermarket.")
+  })
+  
+  introduction_text3 <- reactive({                                  
+    print("\nShiny app created by Kiera Matiska and Devin Ngo, Master's Candidates at the Bren School
+           of Environmental Science and Management. Data is from the Food Access Research Atlas 
+           and compiled by user @Tim Crammond on Kaggle. 
+           The data can be retrieved from: https://www.kaggle.com/tcrammond/food-access-and-food-deserts)")
+  })
+  
+  output$introduction_text1 <- renderText({
+    introduction_text1()
+  })
+  
+  output$food_deserts_fig <- renderImage({
+    food_deserts_fig()
+  })
+  
+  output$us_pic <- renderImage({
+    us_pic()
+  })
+  
+  output$introduction_text2 <- renderText({
+    introduction_text2()
+  })
+  
+  output$introduction_text3 <- renderText({
+    introduction_text3()
+  })
+  
+  output$widget1_text <- renderText({
+    widget1_text()
+  })
+  
+  output$widget2_text <- renderText({
+    widget2_text()
+  })
+  
+  output$widget3_text <- renderText({
+    widget3_text()
+  })
+  
+  output$widget4_text <- renderText({
+    widget4_text()
+  })
   
   county_map <- reactive({
     state_county_sf <- rur_urb_geom_sf %>%
@@ -285,20 +365,6 @@ server <- function(input, output) {
   output$vehicle_access <- renderPlot({
     vehicle_access()
     })
-  
-  # About Page
-  state_map <- reactive({
-    tmap_mode(mode = "view")
-        state_tmap <- tm_shape(state_subset_sf) +
-      tm_fill("state") +
-      tm_borders(col = "black")
-    print(state_map)
-    return(state_map)
-  })
-  
-  output$state_map <- renderPlot({
-    state_map()
-  })
   
 }
 
