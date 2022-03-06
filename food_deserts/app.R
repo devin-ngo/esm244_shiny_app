@@ -309,7 +309,7 @@ server <- function(input, output) {
         median_family_income >= input$income_slider[1], 
         median_family_income <= input$income_slider[2]) %>%
       group_by(county) %>% 
-      summarize(mean_SNAP = mean(tract_snap))
+      summarize(sum_SNAP = sum(tract_snap))
   })
   
   output$income_snap_table <- renderTable({
