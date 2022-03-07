@@ -107,7 +107,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                         textOutput("introduction_text1"),
                                         img(src = "food_deserts_stats.png"),
                                         img(src = "US_map.png"),
-                                        imageOutput("us_pic"),
+                                        imageOutput("us_pic"), 
                                         textOutput("introduction_text2"),
                                         textOutput("widget1_text"),
                                         textOutput("widget2_text"),
