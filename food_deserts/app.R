@@ -293,8 +293,8 @@ server <- function(input, output) {
     message("Input$state2 = ", input$state2)
     state_fa <- food_access %>%
     filter(state == input$state2) %>%
-      summarize(total_pop = sum(pop2010),
-                total_snap = sum(tract_snap))
+      summarize(Total_Population = sum(pop2010),
+                Total_Population_With_SNAP_Benefits = sum(tract_snap))
     print(state_fa)
     return(state_fa)
   })
@@ -309,8 +309,9 @@ server <- function(input, output) {
       filter(
         median_family_income >= input$income_slider[1], 
         median_family_income <= input$income_slider[2]) %>%
-      group_by(county) %>% 
-      summarize(sum_SNAP = sum(tract_snap))
+      rename(County = county) %>% 
+      group_by(County) %>% 
+      summarize(Sum_SNAP_Benefits = sum(tract_snap))
   })
   
   output$income_snap_table <- renderTable({
