@@ -94,9 +94,9 @@ ethnicity_sub <- ethnicity %>%
     eth_dist == "sum_omultir_20" ~ "omultir"
   ))
 
-us_map <- img(src = "US_map.png")
-
-desert_stat <- img(src = "food_deserts_stat.png")
+# us_map <- img(src = "US_map.png")
+# 
+# desert_stat <- img(src = "food_deserts_stat.png")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
@@ -105,7 +105,8 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                            tabPanel("Introduction",
                                       mainPanel(
                                         textOutput("introduction_text1"),
-                                        imageOutput("food_deserts_fig"),
+                                        img(src = "food_deserts_stats.png"),
+                                        img(src = "US_map.png"),
                                         imageOutput("us_pic"),
                                         textOutput("introduction_text2"),
                                         textOutput("widget1_text"),
@@ -193,13 +194,13 @@ server <- function(input, output) {
            A map of the United States is included below for reference.")
   })
   
-  food_deserts_fig <- reactive({
-    print(desert_stat)
-  })
-  
-  us_pic <- reactive({
-    print(us_map)
-  })
+  # food_deserts_fig <- reactive({
+  #   print(desert_stat)
+  # })
+  # 
+  # us_pic <- reactive({
+  #   print(us_map)
+  # })
   
   introduction_text2 <- reactive({                                    
     print("\nThis app is focused on examining food deserts in the US and 
@@ -236,14 +237,14 @@ server <- function(input, output) {
     introduction_text1()
   })
   
-  output$food_deserts_fig <- renderImage({
-    food_deserts_fig()
-  })
-  
-  output$us_pic <- renderImage({
-    us_pic()
-  })
-  
+  # output$food_deserts_fig <- renderImage({
+  #   food_deserts_fig()
+  # })
+  # 
+  # output$us_pic <- renderImage({
+  #   us_pic()
+  # })
+  # 
   output$introduction_text2 <- renderText({
     introduction_text2()
   })
