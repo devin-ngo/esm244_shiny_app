@@ -355,7 +355,8 @@ server <- function(input, output) {
   vehicle_access <- reactive({
     vehicle_access_data <- pivot_longer_vehicle %>% 
       filter(state == input$state4,
-             name == input$vehicle_radio)
+             name == input$vehicle_radio) %>% 
+      group_by(county)
     
       ggplot(data = vehicle_access_data, 
              aes(x = value, y = tot_pop)) +
