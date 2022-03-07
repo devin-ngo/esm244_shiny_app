@@ -293,14 +293,16 @@ server <- function(input, output) {
     message("Input$state2 = ", input$state2)
     state_fa <- food_access %>%
     filter(state == input$state2) %>%
-      summarize(Total_Population = sum(pop2010),
-                Total_Population_With_SNAP_Benefits = sum(tract_snap))
+      summarize(total_pop = sum(pop2010),
+                total_snap = sum(tract_snap))
     print(state_fa)
     return(state_fa)
   })
   output$state_pop_table <- renderTable({
     message("message 2")
-    state_pop_table()
+    state_pop_table() %>% 
+      rename("Total Population" = "total_pop",
+             "Total Population with SNAP Benefits" = "total_snap")
   })
    
   income_snap_table <- reactive({
@@ -311,11 +313,13 @@ server <- function(input, output) {
         median_family_income <= input$income_slider[2]) %>%
       rename(County = county) %>% 
       group_by(County) %>% 
-      summarize(Sum_SNAP_Benefits = sum(tract_snap))
+      summarize(sum_SNAP = sum(tract_snap))
   })
   
   output$income_snap_table <- renderTable({
-    income_snap_table()
+    income_snap_table() %>% 
+      rename("Population with SNAP Benefits" = "sum_SNAP")
+      
   })
 
   # Widget 3 output
