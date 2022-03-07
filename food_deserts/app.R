@@ -301,8 +301,8 @@ server <- function(input, output) {
   output$state_pop_table <- renderTable({
     message("message 2")
     state_pop_table() %>% 
-      rename("Total Population" = "total_pop",
-             "Total Population with SNAP Benefits" = "total_snap")
+      rename("Total US Population" = "total_pop",
+             "Total US Population with SNAP Benefits" = "total_snap")
   })
    
   income_snap_table <- reactive({
