@@ -9,6 +9,7 @@ library(tmaptools)
 library(sf)
 library(janitor)
 library(rasterize)
+library(plotly)
 
 # Reading in data
 food_access <- read_csv(here("data", "food_access_subset.csv"))
@@ -355,10 +356,9 @@ server <- function(input, output) {
   vehicle_access <- reactive({
     vehicle_access_data <- pivot_longer_vehicle %>% 
       filter(state == input$state4,
-             name == input$vehicle_radio) %>% 
-      group_by(county)
+             name == input$vehicle_radio)
     
-      ggplot(data = vehicle_access_data, 
+      x <- ggplot(data = vehicle_access_data, 
              aes(x = value, y = tot_pop)) +
       geom_point(aes(color = county,shape = urban)) +
         scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
