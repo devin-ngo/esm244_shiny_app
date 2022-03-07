@@ -104,16 +104,15 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                 navbarPage("Food Access Tools",
                            tabPanel("Introduction",
                                       mainPanel(
-                                        textOutput("introduction_text1"),
-                                        img(src = "food_deserts_stats.png"),
-                                        img(src = "US_map.png"),
-                                        imageOutput("us_pic"), 
-                                        textOutput("introduction_text2"),
-                                        textOutput("widget1_text"),
-                                        textOutput("widget2_text"),
-                                        textOutput("widget3_text"),
-                                        textOutput("widget4_text"),
-                                        textOutput("introduction_text3")
+                                        p(textOutput("introduction_text1")),
+                                        p(img(src = "food_deserts_stats.png")),
+                                        p(img(src = "US_map.png", width = "800px", height = "500px")),
+                                        p(textOutput("introduction_text2")),
+                                        p(textOutput("widget1_text")),
+                                        p(textOutput("widget2_text")),
+                                        p(textOutput("widget3_text")),
+                                        p(textOutput("widget4_text")),
+                                        p(textOutput("introduction_text3"))
                                     ) # end mainPanel 1
                            ), #end tabPanel 1
                            tabPanel("W1 - Rural/Urban Breakdown",
@@ -167,7 +166,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                    from the nearest supermarket",
                                                    selectInput(inputId = "state4", label = h3("Select State"),
                                                                choices = unique(pivot_longer_vehicle$state), selected = "Alabama"),  
-                                                   radioButtons(inputId = "vehicle_radio", label = h3("County Classification:"),
+                                                   radioButtons(inputId = "vehicle_radio", label = h3("Distance from nearest supermarket"),
                                                                 choiceNames = list("1/2 Mile", "1 Mile", "10 Miles", "20 Miles"),
                                                                 choiceValues = list("vehicle_half", "vehicle1", "vehicle10", "vehicle20"),
                                                                 selected = "vehicle_half")
@@ -302,8 +301,8 @@ server <- function(input, output) {
   output$state_pop_table <- renderTable({
     message("message 2")
     state_pop_table() %>% 
-      rename("Total US Population" = "total_pop",
-             "Total US Population with SNAP Benefits" = "total_snap")
+      rename("State Population" = "total_pop",
+             "Population with SNAP Benefits" = "total_snap")
   })
    
   income_snap_table <- reactive({
