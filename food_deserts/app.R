@@ -356,14 +356,19 @@ server <- function(input, output) {
   vehicle_access <- reactive({
     vehicle_access_data <- pivot_longer_vehicle %>% 
       filter(state == input$state4,
-             name == input$vehicle_radio)
+             name == input$vehicle_radio) %>% 
+      group_by(county) %>% 
+      rename(Classification = urban,
+             County = county,
+             HUNV = value,
+             Population = tot_pop)
     
       x <- ggplot(data = vehicle_access_data, 
-             aes(x = value, y = tot_pop)) +
-      geom_point(aes(color = county,shape = urban)) +
+             aes(x = HUNV, y = Population)) +
+      geom_point(aes(color = County,shape = Classification)) +
         scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
         theme(legend.position = "none") +
-        labs(x = "Housing Units Without a Vehicle",
+        labs(x = "Housing Units Without a Vehicle (HUNV)",
              y = "Total Population Count")
       
       ggplotly(x)
