@@ -172,7 +172,7 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                                                 selected = "vehicle_half")
                                       ), #end sidebarPanel 5
                                       mainPanel(
-                                        plotOutput("vehicle_access")) #end mainPanel
+                                        plotlyOutput("vehicle_access")) #end mainPanel
                                     ) #end sidebar Layout
                            ) #end tabPanel 5
                            
@@ -365,9 +365,11 @@ server <- function(input, output) {
         theme(legend.position = "none") +
         labs(x = "Housing Units Without a Vehicle",
              y = "Total Population Count")
+      
+      ggplotly(x)
   })
   
-  output$vehicle_access <- renderPlot({
+  output$vehicle_access <- renderPlotly({
     vehicle_access()
     })
   
