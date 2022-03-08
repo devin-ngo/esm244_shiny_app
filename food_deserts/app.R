@@ -1,4 +1,5 @@
 library(shiny)
+library(shinydashboard)
 library(here)
 library(tidyverse)
 library(shinythemes)
@@ -99,10 +100,19 @@ ethnicity_sub <- ethnicity %>%
 # desert_stat <- img(src = "food_deserts_stat.png")
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own theme later
-                titlePanel("Food Deserts in America "), # Application title 
+ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme later
+                titlePanel("Food Deserts in America"), # Application title 
                 navbarPage("Food Access Tools",
                            tabPanel("Introduction",
+                                    sidebarLayout(
+                                      sidebarPanel(
+                                        textOutput("sp_citation"),
+                                        p(h4(strong(textOutput("sp_authors")))),
+                                        p(h5(strong(textOutput("sp_author_km")))),
+                                        textOutput("sp_km_bio"),
+                                        p(h5(strong(textOutput("sp_author_dn")))),
+                                        textOutput("sp_dn_bio")
+                                      ), # end sidebarPanel1
                                       mainPanel(
                                         p(textOutput("introduction_text1")),
                                         p(img(src = "food_deserts_stats.png")),
@@ -111,9 +121,9 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
                                         p(textOutput("widget1_text")),
                                         p(textOutput("widget2_text")),
                                         p(textOutput("widget3_text")),
-                                        p(textOutput("widget4_text")),
-                                        p(textOutput("introduction_text3"))
+                                        p(textOutput("widget4_text"))
                                     ) # end mainPanel 1
+                                    ) # end sidebarLayout 1
                            ), #end tabPanel 1
                            tabPanel("W1 - Rural/Urban Breakdown",
                                     sidebarLayout(
@@ -182,6 +192,60 @@ ui <- fluidPage(theme = shinytheme("sandstone"), # Will probably customize own t
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
+  sp_citation <- reactive({
+    print("Data is from the Food Access Research Atlas 
+           and compiled by user @Tim Crammond on Kaggle. 
+           The data can be retrieved from: https://www.kaggle.com/tcrammond/food-access-and-food-deserts")
+  })
+  
+  sp_authors <- reactive({
+    print("Authors:")
+  })
+  
+  sp_author_km <- reactive({
+    print("Kiera Matiska")
+  })
+  
+  sp_km_bio <- reactive({
+    print("I am a Master's Student at the Bren School of Environmental Science and Management at the University of California - 
+          Santa Barbara, specializing in Conservation Planning and Energy and Climate. I am interested in wildlife and natural
+          resource conservation and energy disparities within the United States. I hope to be able to use the skills I learn at
+          Bren to work at the intersection of how energy systems in the United States and worldwide impact natural ecosystems
+          in nearby areas.")
+  })
+  
+  sp_author_dn <- reactive({
+    print("Devin Ngo")
+  })
+  
+  sp_dn_bio <- reactive({
+    print("Write a little about yourself")
+  })
+  
+  output$sp_citation <- renderText({
+    sp_citation()
+  })
+  
+  output$sp_authors <- renderText({
+    sp_authors()
+  })
+  
+  output$sp_author_km <- renderText({
+    sp_author_km()
+  })
+  
+  output$sp_km_bio <- renderText({
+    sp_km_bio()
+  })
+  
+  output$sp_author_dn <- renderText({
+    sp_author_dn()
+  })
+  
+  output$sp_dn_bio <- renderText({
+    sp_dn_bio()
+  })
+  
   introduction_text1 <- reactive({
     print("Throughout the United States, food deserts are a major issue. Food deserts are defined as
            regions where people have limited access to food that is both nutritious and helpful (Jessica
@@ -202,7 +266,7 @@ server <- function(input, output) {
   # })
   
   introduction_text2 <- reactive({                                    
-    print("\nThis app is focused on examining food deserts in the US and 
+    print("This app is focused on examining food deserts in the US and 
            how factors such as income and ethnicity play a role in the distance of individuals 
            from supermarkets. We hope to shed a light on the issue of food insecurity
            and how changes need to be made to improve access to food for disadvantaged communities.")
@@ -225,31 +289,12 @@ server <- function(input, output) {
            distance from the nearest supermarket.")
   })
   
-  introduction_text3 <- reactive({                                  
-    print("\nShiny app created by Kiera Matiska and Devin Ngo, Master's Candidates at the Bren School
-           of Environmental Science and Management. Data is from the Food Access Research Atlas 
-           and compiled by user @Tim Crammond on Kaggle. 
-           The data can be retrieved from: https://www.kaggle.com/tcrammond/food-access-and-food-deserts)")
-  })
-  
   output$introduction_text1 <- renderText({
     introduction_text1()
   })
-  
-  # output$food_deserts_fig <- renderImage({
-  #   food_deserts_fig()
-  # })
-  # 
-  # output$us_pic <- renderImage({
-  #   us_pic()
-  # })
-  # 
+
   output$introduction_text2 <- renderText({
     introduction_text2()
-  })
-  
-  output$introduction_text3 <- renderText({
-    introduction_text3()
   })
   
   output$widget1_text <- renderText({
