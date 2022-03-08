@@ -125,7 +125,7 @@ ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme l
                                     ) # end mainPanel 1
                                     ) # end sidebarLayout 1
                            ), #end tabPanel 1
-                           tabPanel("W1 - Rural/Urban Breakdown",
+                           tabPanel("Rural and Urban County Breakdown",
                                     sidebarLayout(
                                       sidebarPanel("Interactive map visualization of rural and urban areas by state and county", #end sidebar panel
                                                    selectInput(inputId = "state", label = h3("Select State"),
@@ -136,7 +136,7 @@ ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme l
                                     ) #End sidebarLayout 2
                            ), #End Tab 2
                            
-                           tabPanel("W2 - Income Range",
+                           tabPanel("Income and SNAP Program",
                                     sidebarLayout(
                                       sidebarPanel("Interactive tables detailing state population, SNAP benefits, and median family income",
                                                    sliderInput(inputId = "income_slider", label = h3("Income Range"), min = 0, 
@@ -151,7 +151,7 @@ ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme l
                                     ) # end sidebarLayout 3
                            ), #End tabPanel 3
                            
-                           tabPanel("W3 - Ethnicity Checkbox",
+                           tabPanel("Ethnicity and Food Access",
                                     sidebarLayout(
                                       sidebarPanel("Interactive plot visualizing ethnicty groups and population counts 
                                                    that are certain distances from the nearest supermarket",
@@ -169,7 +169,7 @@ ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme l
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
 
-                           tabPanel("W4 - Access Tracts",
+                           tabPanel("Vehicle Access and Food Access",
                                     sidebarLayout(
                                       sidebarPanel("Interactive scatterplot visualizing the total population count
                                                    vs the number of households without a vehicle at certain distances
@@ -219,7 +219,10 @@ server <- function(input, output) {
   })
   
   sp_dn_bio <- reactive({
-    print("Write a little about yourself")
+    print("I am a Master's Student at the Bren School of Environmental Science and Management at the University of California, Santa
+          Barbara, planning to specialize in Energy and Climate. I am looking to better understand energy systems and look at ways 
+          technology and policy impacts energy production and consumption. I also want to incorporate environmental justice in my work by 
+          looking at solutions to address the disparities disavantaged communities face from climate impacts.")
   })
   
   output$sp_citation <- renderText({
