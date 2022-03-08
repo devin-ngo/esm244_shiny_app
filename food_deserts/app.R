@@ -2,15 +2,13 @@ library(shiny)
 library(shinydashboard)
 library(here)
 library(tidyverse)
-library(shinythemes)
-library(leaflet)
-library(leaflet.extras)
 library(tmap)
 library(tmaptools)
 library(sf)
 library(janitor)
 library(rasterize)
 library(plotly)
+library(bslib)
 
 # Reading in data
 food_access <- read_csv(here("data", "food_access_subset.csv"))
@@ -95,12 +93,12 @@ ethnicity_sub <- ethnicity %>%
     eth_dist == "sum_omultir_20" ~ "omultir"
   ))
 
-# us_map <- img(src = "US_map.png")
-# 
-# desert_stat <- img(src = "food_deserts_stat.png")
+my_theme <- bs_theme(bootswatch = "flatly",
+                     primary = "#1b6535",
+                     success = "#a8c66c")
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme later
+ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                 titlePanel("Food Deserts in America"), # Application title 
                 navbarPage("Food Access Tools",
                            tabPanel("Introduction",
@@ -113,7 +111,8 @@ ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme l
                                         p(h5(strong(textOutput("sp_author_dn")))),
                                         textOutput("sp_dn_bio")
                                       ), # end sidebarPanel1
-                                      mainPanel(
+                                      mainPanel(style = "border-style: solid; border-color: black",
+                                        h3(textOutput("introduction")),
                                         p(textOutput("introduction_text1")),
                                         p(img(src = "food_deserts_stats.png")),
                                         p(img(src = "US_map.png", width = "800px", height = "500px")),
@@ -132,7 +131,9 @@ ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme l
                                                                choices = unique(food_access$state), selected = "Alabama") # end select input
                                     ), # end sidebarPanel 2
                                     mainPanel(
-                                      tmapOutput("county_map"))
+                                      tmapOutput("county_map"),
+                                      p(h5(strong(textOutput("county_map_figure")))),
+                                      p(textOutput("county_map_text")))
                                     ) #End sidebarLayout 2
                            ), #End Tab 2
                            
@@ -191,7 +192,8 @@ ui <- fluidPage(theme = "shiny_theme.css", # Will probably customize own theme l
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  
+ 
+  # Sidebar panel text for introduction tab 
   sp_citation <- reactive({
     print("Data is from the Food Access Research Atlas 
            and compiled by user @Tim Crammond on Kaggle. 
@@ -249,6 +251,11 @@ server <- function(input, output) {
     sp_dn_bio()
   })
   
+  # main panel outputs for the introduction tab
+  introduction <- reactive({
+    print("Introduction")
+  })
+  
   introduction_text1 <- reactive({
     print("Throughout the United States, food deserts are a major issue. Food deserts are defined as
            regions where people have limited access to food that is both nutritious and helpful (Jessica
@@ -259,14 +266,6 @@ server <- function(input, output) {
            is poverty and ethnicity (USDA). Other significant factors are included in this figure produced by the USDA.
            A map of the United States is included below for reference.")
   })
-  
-  # food_deserts_fig <- reactive({
-  #   print(desert_stat)
-  # })
-  # 
-  # us_pic <- reactive({
-  #   print(us_map)
-  # })
   
   introduction_text2 <- reactive({                                    
     print("This app is focused on examining food deserts in the US and 
@@ -290,6 +289,10 @@ server <- function(input, output) {
   widget4_text <- reactive({
     print("The final widget looks at how many housing units do not own a vehicle within a certain 
            distance from the nearest supermarket.")
+  })
+  
+  output$introduction <- renderText({
+    introduction()
   })
   
   output$introduction_text1 <- renderText({
@@ -316,6 +319,7 @@ server <- function(input, output) {
     widget4_text()
   })
   
+  # Main panel output for map tab
   county_map <- reactive({
     state_county_sf <- rur_urb_geom_sf %>%
       filter(state == input$state) %>% 
@@ -332,9 +336,28 @@ server <- function(input, output) {
     print(county_tmap)
     return(county_tmap)
   })
+  
+  county_map_figure <- reactive({
+    print("Figure 1:")
+  })
 
+  county_map_text <- reactive({
+    print("An interactive map that will switch displays depending on which state is chosen. Counties are colored based
+          on their county classification: yellow for counties that are more urban and blue for counties that are more 
+          rural. When a county is chosen, you can view the county name, the total population in 2010, and the county 
+          classification.")
+  })
+  
   output$county_map <- renderTmap({
     county_map()
+  })
+  
+  output$county_map_figure <- renderText({
+    county_map_figure()
+  })
+  
+  output$county_map_text <- renderText({
+    county_map_text()
   })
   
   state_pop_table <- reactive({
