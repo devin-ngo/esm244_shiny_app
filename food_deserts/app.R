@@ -9,6 +9,7 @@ library(janitor)
 library(rasterize)
 library(plotly)
 library(bslib)
+library(DT)
 
 # Reading in data
 food_access <- read_csv(here("data", "food_access_subset.csv"))
@@ -32,66 +33,9 @@ pivot_longer_vehicle <- vehicle_food %>%
 ethnicity <- read_csv(here("data","ethnicity_subset.csv"))
 
 ethnicity_sub <- ethnicity %>% 
-  mutate(dist_eth = case_when(
-    eth_dist == "sum_nhopi_half" ~ "0.5",
-    eth_dist == "sum_asian_half" ~ "0.5",
-    eth_dist == "sum_black_half" ~ "0.5",
-    eth_dist == "sum_hisp_half" ~ "0.5",
-    eth_dist == "sum_aian_half" ~ "0.5",
-    eth_dist == "sum_white_half" ~ "0.5",
-    eth_dist == "sum_omultir_half" ~ "0.5",
-    eth_dist == "sum_nhopi_1" ~ "1",
-    eth_dist == "sum_asian_1" ~ "1",
-    eth_dist == "sum_black_1" ~ "1",
-    eth_dist == "sum_hisp_1" ~ "1",
-    eth_dist == "sum_aian_1" ~ "1",
-    eth_dist == "sum_white_1" ~ "1",
-    eth_dist == "sum_omultir_1" ~ "1",
-    eth_dist == "sum_nhopi_10" ~ "10",
-    eth_dist == "sum_asian_10" ~ "10",
-    eth_dist == "sum_black_10" ~ "10",
-    eth_dist == "sum_hisp_10" ~ "10",
-    eth_dist == "sum_aian_10" ~ "10",
-    eth_dist == "sum_white_10" ~ "10",
-    eth_dist == "sum_omultir_10" ~ "10",
-    eth_dist == "sum_nhopi_20" ~ "20",
-    eth_dist == "sum_asian_20" ~ "20",
-    eth_dist == "sum_black_20" ~ "20",
-    eth_dist == "sum_hisp_20" ~ "20",
-    eth_dist == "sum_aian_20" ~ "20",
-    eth_dist == "sum_white_20" ~ "20",
-    eth_dist == "sum_omultir_20" ~ "20"
-  )) %>% 
-  mutate(ethnicity = case_when(
-    eth_dist == "sum_nhopi_half" ~ "nhopi",
-    eth_dist == "sum_asian_half" ~ "asian",
-    eth_dist == "sum_black_half" ~ "black",
-    eth_dist == "sum_hisp_half" ~ "hisp",
-    eth_dist == "sum_aian_half" ~ "aian",
-    eth_dist == "sum_white_half" ~ "white",
-    eth_dist == "sum_omultir_half" ~ "omultir",
-    eth_dist == "sum_nhopi_1" ~ "nhopi",
-    eth_dist == "sum_asian_1" ~ "asian",
-    eth_dist == "sum_black_1" ~ "black",
-    eth_dist == "sum_hisp_1" ~ "hisp",
-    eth_dist == "sum_aian_1" ~ "aian",
-    eth_dist == "sum_white_1" ~ "white",
-    eth_dist == "sum_omultir_1" ~ "omultir",
-    eth_dist == "sum_nhopi_10" ~ "nhopi",
-    eth_dist == "sum_asian_10" ~ "asian",
-    eth_dist == "sum_black_10" ~ "black",
-    eth_dist == "sum_hisp_10" ~ "hisp",
-    eth_dist == "sum_aian_10" ~ "aian",
-    eth_dist == "sum_white_10" ~ "white",
-    eth_dist == "sum_omultir_10" ~ "omultir",
-    eth_dist == "sum_nhopi_20" ~ "nhopi",
-    eth_dist == "sum_asian_20" ~ "asian",
-    eth_dist == "sum_black_20" ~ "black",
-    eth_dist == "sum_hisp_20" ~ "hisp",
-    eth_dist == "sum_aian_20" ~ "aian",
-    eth_dist == "sum_white_20" ~ "white",
-    eth_dist == "sum_omultir_20" ~ "omultir"
-  ))
+  separate(eth_dist,
+           sep = "_",
+           into = c("sum", "ethnicity", "distance"))
 
 my_theme <- bs_theme(bootswatch = "flatly",
                      primary = "#1b6535",
@@ -345,7 +289,7 @@ server <- function(input, output) {
     print("An interactive map that will switch displays depending on which state is chosen. Counties are colored based
           on their county classification: yellow for counties that are more urban and blue for counties that are more 
           rural. When a county is chosen, you can view the county name, the total population in 2010, and the county 
-          classification.")
+          classification.") # try renderText
   })
   
   output$county_map <- renderTmap({
@@ -361,7 +305,6 @@ server <- function(input, output) {
   })
   
   state_pop_table <- reactive({
-    message("Input$state2 = ", input$state2)
     state_fa <- food_access %>%
     filter(state == input$state2) %>%
       summarize(total_pop = sum(pop2010),
@@ -369,15 +312,15 @@ server <- function(input, output) {
     print(state_fa)
     return(state_fa)
   })
+  
   output$state_pop_table <- renderTable({
-    message("message 2")
     state_pop_table() %>% 
       rename("State Population" = "total_pop",
              "Population with SNAP Benefits" = "total_snap")
   })
    
   income_snap_table <- reactive({
-    food_access %>%
+    table <- food_access %>%
       filter(state == input$state2) %>%
       filter(
         median_family_income >= input$income_slider[1], 
@@ -385,12 +328,13 @@ server <- function(input, output) {
       rename(County = county) %>% 
       group_by(County) %>% 
       summarize(sum_SNAP = sum(tract_snap))
+    
+    datatable(table)
   })
   
   output$income_snap_table <- renderTable({
-    income_snap_table() %>% 
-      rename("Population with SNAP Benefits" = "sum_SNAP")
-      
+    income_snap_table() 
+      # rename("Population with SNAP Benefits" = "sum_SNAP")
   })
 
   # Widget 3 output
@@ -398,7 +342,7 @@ server <- function(input, output) {
   eth_plot <- reactive({
     eth_table <- ethnicity_sub %>% 
       filter(state == input$state3) %>% 
-      filter(ethnicity == input$ethnicity_check)
+      filter(ethnicity %in% input$ethnicity_check)
     
       ggplot(data = eth_table,
              aes(x = ethnicity, y = count)) +
