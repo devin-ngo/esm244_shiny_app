@@ -110,7 +110,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                                                       selected = c("white", "black", "asian"))
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        plotOutput("eth_plot")) #end mainPanel
+                                        plotlyOutput("eth_plot")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
 
@@ -329,7 +329,7 @@ server <- function(input, output) {
       group_by(County) %>% 
       summarize(sum_SNAP = sum(tract_snap))
     
-    datatable(table)
+    # datatable(table)
   })
   
   output$income_snap_table <- renderTable({
@@ -344,13 +344,16 @@ server <- function(input, output) {
       filter(state == input$state3) %>% 
       filter(ethnicity %in% input$ethnicity_check)
     
-      ggplot(data = eth_table,
+    y <-  ggplot(data = eth_table,
              aes(x = ethnicity, y = count)) +
-      geom_jitter() +
-        labs(x = "Ethnicity", y = "Count")
+      geom_jitter(aes(color = distance)) +
+        labs(x = "Ethnicity", y = "Count") +
+        theme(legend.position = "bottom")
+    
+    ggplotly(y)
   })
   
-  output$eth_plot <- renderPlot({
+  output$eth_plot <- renderPlotly({
     eth_plot()
   })
   
