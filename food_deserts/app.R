@@ -107,10 +107,14 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                                                                   "Asian" = "asian", "Native Hawaiian or Other Pacific Islander" = "nhopi", 
                                                                                   "American Indian or Alaska Native" = "aian", "Hispanic or Latino"= "hisp",
                                                                                   "Other or Multiple Race" = "omultir"),
-                                                                      selected = c("white", "black", "asian"))
+                                                                      selected = c("white", "black", "asian")),
+                                                   radioButtons(inputId = "ethnicity_radio", label = h3("Distance from nearest supermarket"),
+                                                                choiceNames = list("1/2 Mile", "1 Mile", "10 Miles", "20 Miles"),
+                                                                choiceValues = list("half", "1", "10", "20"),
+                                                                selected = "half")
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        plotlyOutput("eth_plot")) #end mainPanel
+                                        plotOutput("eth_plot")) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
 
@@ -342,18 +346,18 @@ server <- function(input, output) {
   eth_plot <- reactive({
     eth_table <- ethnicity_sub %>% 
       filter(state == input$state3) %>% 
-      filter(ethnicity %in% input$ethnicity_check)
+      filter(ethnicity %in% input$ethnicity_check) %>% 
+      filter(distance == input$ethnicity_radio)  
     
-    y <-  ggplot(data = eth_table,
+    ggplot(data = eth_table,
              aes(x = ethnicity, y = count)) +
-      geom_jitter(aes(color = distance)) +
+      geom_col(aes(fill = ethnicity)) +
         labs(x = "Ethnicity", y = "Count") +
         theme(legend.position = "bottom")
     
-    ggplotly(y)
   })
   
-  output$eth_plot <- renderPlotly({
+  output$eth_plot <- renderPlot({
     eth_plot()
   })
   
