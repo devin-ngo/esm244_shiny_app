@@ -55,7 +55,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                         p(h5(strong(textOutput("sp_author_dn")))),
                                         textOutput("sp_dn_bio")
                                       ), # end sidebarPanel1
-                                      mainPanel(style = "border-style: solid; border-color: black",
+                                      mainPanel(
                                         h3(textOutput("introduction")),
                                         p(textOutput("introduction_text1")),
                                         p(img(src = "food_deserts_stats.png")),
@@ -91,8 +91,8 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                                                max = 250000, value = c(50000, 100000))
                                       ), #end sidebarPanel 3
                                       mainPanel(
-                                        tableOutput(outputId = "state_pop_table"),
-                                        tableOutput(outputId = "income_snap_table")
+                                        dataTableOutput(outputId = "state_pop_table"),
+                                        dataTableOutput(outputId = "income_snap_table")
                                         ) #end mainPanel
                                     ) # end sidebarLayout 3
                            ), #End tabPanel 3
@@ -330,14 +330,17 @@ server <- function(input, output) {
     filter(state == input$state2) %>%
       summarize(total_pop = sum(pop2010),
                 total_snap = sum(tract_snap))
-    print(state_fa)
-    return(state_fa)
+    
+    state_fa_df <- data.frame(state_fa)
+    
+    datatable(state_fa_df,
+              colnames = c("State Population" = "total_pop",
+                           "Population with SNAP Benefits" = "total_snap"),
+              style = "bootstrap4")
   })
   
-  output$state_pop_table <- renderTable({
-    state_pop_table() %>% 
-      rename("State Population" = "total_pop",
-             "Population with SNAP Benefits" = "total_snap")
+  output$state_pop_table <- renderDataTable({
+    state_pop_table()
   })
    
   income_snap_table <- reactive({
@@ -350,12 +353,16 @@ server <- function(input, output) {
       group_by(County) %>% 
       summarize(sum_SNAP = sum(tract_snap))
     
-    # datatable(table)
+    table_df <- data.frame(table)
+  
+    datatable(table_df,
+              colnames = c("County" = "County", 
+                           "Population with SNAP Benefits" = "sum_SNAP"),
+              style = "bootstrap4")
   })
   
-  output$income_snap_table <- renderTable({
-    income_snap_table() %>% 
-      rename("Population with SNAP Benefits" = "sum_SNAP")
+  output$income_snap_table <- renderDataTable({
+    income_snap_table()
   })
 
   # Widget 3 output
