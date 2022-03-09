@@ -47,7 +47,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                 navbarPage("Food Access Tools",
                            tabPanel("Introduction",
                                     sidebarLayout(
-                                      sidebarPanel(
+                                      sidebarPanel(style = "background-color: #a8c66c",
                                         textOutput("sp_citation"),
                                         p(h4(strong(textOutput("sp_authors")))),
                                         p(h5(strong(textOutput("sp_author_km")))),
@@ -71,8 +71,9 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                            ), #end tabPanel 1
                            tabPanel("Rural and Urban County Breakdown",
                                     sidebarLayout(
-                                      sidebarPanel("Interactive map visualization of rural and urban areas by state and county", #end sidebar panel
-                                                   selectInput(inputId = "state", label = h3("Select State"),
+                                      sidebarPanel(style = "background-color: #a8c66c",
+                                                   h3("Rural and Urban County Breakdown"),
+                                                   selectInput(inputId = "state", label = h4("Select State:"),
                                                                choices = unique(food_access$state), selected = "Alabama") # end select input
                                     ), # end sidebarPanel 2
                                     mainPanel(
@@ -84,10 +85,11 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                            
                            tabPanel("Income and SNAP Program",
                                     sidebarLayout(
-                                      sidebarPanel("Interactive tables detailing state population, SNAP benefits, and median family income",
-                                                   selectInput(inputId = "state2", label = h3("Select State"),
+                                      sidebarPanel(style = "background-color: #a8c66c",
+                                                   h3("Income and SNAP Program"),
+                                                   selectInput(inputId = "state2", label = h4("Select State:"),
                                                                choices = unique(food_access$state), selected = "Alabama"),
-                                                   sliderInput(inputId = "income_slider", label = h3("Income Range"), min = 0, 
+                                                   sliderInput(inputId = "income_slider", label = h4("Select Income Range:"), min = 0, 
                                                                max = 250000, value = c(50000, 100000))
                                       ), #end sidebarPanel 3
                                       mainPanel(
@@ -99,10 +101,11 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                            
                            tabPanel("Ethnicity and Food Access",
                                     sidebarLayout(
-                                      sidebarPanel(h3("Ethnicity and Food Access"), 
-                                          selectInput(inputId = "state3", label = h3("Select State"),
+                                      sidebarPanel(style = "background-color: #a8c66c",
+                                                   h3("Ethnicity and Food Access"), 
+                                          selectInput(inputId = "state3", label = h4("Select State:"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
-                                                   checkboxGroupInput(inputId = "ethnicity_check", label = h3("Ethnicity"),
+                                                   checkboxGroupInput(inputId = "ethnicity_check", label = h4("Select Ethnicity:"),
                                                                       choices = c("White" = "white","Black or African American" = "black", 
                                                                                   "Asian" = "asian", "Native Hawaiian or Other Pacific Islander (NHOPI)" = "nhopi", 
                                                                                   "American Indian or Alaska Native (AIAN)" = "aian", "Hispanic or Latino"= "hisp",
@@ -122,10 +125,11 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
 
                            tabPanel("Vehicle Access and Food Access",
                                     sidebarLayout(
-                                      sidebarPanel(h3("Vehicle Access and Food Access"),
-                                                   selectInput(inputId = "state4", label = h3("Select State"),
+                                      sidebarPanel(style = "background-color: #a8c66c",
+                                                   h3("Vehicle Access and Food Access"),
+                                                   selectInput(inputId = "state4", label = h4("Select State:"),
                                                                choices = unique(pivot_longer_vehicle$state), selected = "Alabama"),  
-                                                   radioButtons(inputId = "vehicle_radio", label = h3("Distance from nearest supermarket"),
+                                                   radioButtons(inputId = "vehicle_radio", label = h4("Select Distance from Nearest Supermarket:"),
                                                                 choiceNames = list("1/2 Mile", "1 Mile", "10 Miles", "20 Miles"),
                                                                 choiceValues = list("vehicle_half", "vehicle1", "vehicle10", "vehicle20"),
                                                                 selected = "vehicle_half")
@@ -144,6 +148,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
 server <- function(input, output) {
  
   # Sidebar panel text for introduction tab 
+  
   sp_citation <- reactive({
     print("Data is from the Food Access Research Atlas 
            and compiled by user @Tim Crammond on Kaggle. 
@@ -202,6 +207,7 @@ server <- function(input, output) {
   })
   
   # main panel outputs for the introduction tab
+  
   introduction <- reactive({
     print("Introduction")
   })
