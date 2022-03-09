@@ -61,6 +61,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                         p(img(src = "food_deserts_stats.png")),
                                         p(img(src = "US_map.png", width = "800px", height = "500px")),
                                         p(textOutput("introduction_text2")),
+                                        p(textOutput("introduction_text3")),
                                         p(textOutput("widget1_text")),
                                         p(textOutput("widget2_text")),
                                         p(textOutput("widget3_text")),
@@ -84,10 +85,10 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                            tabPanel("Income and SNAP Program",
                                     sidebarLayout(
                                       sidebarPanel("Interactive tables detailing state population, SNAP benefits, and median family income",
-                                                   sliderInput(inputId = "income_slider", label = h3("Income Range"), min = 0, 
-                                                               max = 250000, value = c(0, 250000)),
                                                    selectInput(inputId = "state2", label = h3("Select State"),
-                                                               choices = unique(food_access$state), selected = "Alabama")  
+                                                               choices = unique(food_access$state), selected = "Alabama"),
+                                                   sliderInput(inputId = "income_slider", label = h3("Income Range"), min = 0, 
+                                                               max = 250000, value = c(50000, 100000))
                                       ), #end sidebarPanel 3
                                       mainPanel(
                                         tableOutput(outputId = "state_pop_table"),
@@ -98,31 +99,30 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                            
                            tabPanel("Ethnicity and Food Access",
                                     sidebarLayout(
-                                      sidebarPanel("Interactive plot visualizing ethnicty groups and population counts 
-                                                   that are certain distances from the nearest supermarket",
-                                                   selectInput(inputId = "state3", label = h3("Select State"),
+                                      sidebarPanel(h3("Ethnicity and Food Access"), 
+                                          selectInput(inputId = "state3", label = h3("Select State"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
                                                    checkboxGroupInput(inputId = "ethnicity_check", label = h3("Ethnicity"),
                                                                       choices = c("White" = "white","Black or African American" = "black", 
-                                                                                  "Asian" = "asian", "Native Hawaiian or Other Pacific Islander" = "nhopi", 
-                                                                                  "American Indian or Alaska Native" = "aian", "Hispanic or Latino"= "hisp",
+                                                                                  "Asian" = "asian", "Native Hawaiian or Other Pacific Islander (NHOPI)" = "nhopi", 
+                                                                                  "American Indian or Alaska Native (AIAN)" = "aian", "Hispanic or Latino"= "hisp",
                                                                                   "Other or Multiple Race" = "omultir"),
-                                                                      selected = c("white", "black", "asian")),
+                                                                      selected = c("white", "black", "asian", "nhopi", "aian", "hisp", "omultir")),
                                                    radioButtons(inputId = "ethnicity_radio", label = h3("Distance from nearest supermarket"),
                                                                 choiceNames = list("1/2 Mile", "1 Mile", "10 Miles", "20 Miles"),
                                                                 choiceValues = list("half", "1", "10", "20"),
                                                                 selected = "half")
                                       ), #end sidebarPanel 4
                                       mainPanel(
-                                        plotOutput("eth_plot")) #end mainPanel
+                                        plotOutput("eth_plot"),
+                                        p(h5(strong(textOutput("eth_header")))),
+                                        p(textOutput("eth_text"))) #end mainPanel
                                     ) #end sidebar Layout
                            ), #end tabPanel 4
 
                            tabPanel("Vehicle Access and Food Access",
                                     sidebarLayout(
-                                      sidebarPanel("Interactive scatterplot visualizing the total population count
-                                                   vs the number of households without a vehicle at certain distances
-                                                   from the nearest supermarket",
+                                      sidebarPanel(h3("Vehicle Access and Food Access"),
                                                    selectInput(inputId = "state4", label = h3("Select State"),
                                                                choices = unique(pivot_longer_vehicle$state), selected = "Alabama"),  
                                                    radioButtons(inputId = "vehicle_radio", label = h3("Distance from nearest supermarket"),
@@ -131,7 +131,9 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                                                 selected = "vehicle_half")
                                       ), #end sidebarPanel 5
                                       mainPanel(
-                                        plotlyOutput("vehicle_access")) #end mainPanel
+                                        plotlyOutput("vehicle_access"),
+                                        p(h5(strong(textOutput("vehicle_header")))),
+                                        p(textOutput("vehicle_text"))) #end mainPanel
                                     ) #end sidebar Layout
                            ) #end tabPanel 5
                            
@@ -208,17 +210,28 @@ server <- function(input, output) {
     print("Throughout the United States, food deserts are a major issue. Food deserts are defined as
            regions where people have limited access to food that is both nutritious and helpful (Jessica
            Caporuscia, 2020). Limitations can arise due to low-income or distance to the nearest supermarket. 
-           In 2012, the United States Department of Agriculture (USDA) reported that based on the 2000 and 20006
+           In 2012, the United States Department of Agriculture (USDA) reported that based on the 2000 and 2006
            census data, there were more than 6,500 food deserts within the U.S. (USDA). Based on the finding of the 
            report created by the USDA in 2012, they found the most significant factor relating to food deserts
            is poverty and ethnicity (USDA). Other significant factors are included in this figure produced by the USDA.
            A map of the United States is included below for reference.")
   })
   
-  introduction_text2 <- reactive({                                    
+  introduction_text2 <- reactive({
+    print("Items found in lower income neighborhoods are often the less healthier options. This includes
+          more sugar, fewer whole grains, and less produce (Khan, 2018). These low-income neighborhoods also were more  
+          likely to have convenience stores rather than supermarkets, which provide less nutritious options (Khan, 2018).
+          A study examining neighborhoods in Austin, Texas found that the mean percentage of healthy food available in food
+          oases, areas where residents had abundant access to healthful foods, was signficantly higher than that 
+          of food deserts (Jin and Lu, 2021). These findings indicate an urgent need to provide impoverished communities
+          equal access to healthy foods (Jin and Lu, 2021).")
+    
+  })
+  
+  introduction_text3 <- reactive({                                    
     print("This app is focused on examining food deserts in the US and 
-           how factors such as income and ethnicity play a role in the distance of individuals 
-           from supermarkets. We hope to shed a light on the issue of food insecurity
+           how factors such as income and ethnicity play a role in the distance individuals are 
+           from the nearest supermarket. We hope to shed a light on the issue of food insecurity
            and how changes need to be made to improve access to food for disadvantaged communities.")
   })
     
@@ -249,6 +262,10 @@ server <- function(input, output) {
 
   output$introduction_text2 <- renderText({
     introduction_text2()
+  })
+  
+  output$introduction_text3 <- renderText({
+    introduction_text3()
   })
   
   output$widget1_text <- renderText({
@@ -337,8 +354,8 @@ server <- function(input, output) {
   })
   
   output$income_snap_table <- renderTable({
-    income_snap_table() 
-      # rename("Population with SNAP Benefits" = "sum_SNAP")
+    income_snap_table() %>% 
+      rename("Population with SNAP Benefits" = "sum_SNAP")
   })
 
   # Widget 3 output
@@ -347,36 +364,49 @@ server <- function(input, output) {
     eth_table <- ethnicity_sub %>% 
       filter(state == input$state3) %>% 
       filter(ethnicity %in% input$ethnicity_check) %>% 
-      filter(distance == input$ethnicity_radio)  
+      filter(distance == input$ethnicity_radio) %>% 
+      mutate(ethnicity = case_when(
+        ethnicity == "asian" ~ "Asian",
+        ethnicity == "hisp" ~ "Hispanic or Latino",
+        ethnicity == "black" ~ "Black or African American",
+        ethnicity == "white" ~ "White",
+        ethnicity == "nhopi" ~ "NHOPI",
+        ethnicity == "aian" ~ "AIAN", 
+        ethnicity == "omultir" ~ "Other or Multiple Race"))
     
     ggplot(data = eth_table,
              aes(x = ethnicity, y = count)) +
       geom_col(aes(fill = ethnicity)) +
-        labs(x = "Ethnicity", y = "Count") +
-        theme(legend.position = "bottom")
-    
+      scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
+      scale_fill_manual(values = c("maroon", "lightskyblue1", "darkgreen", "mediumaquamarine",
+                        "darkmagenta", "salmon1", "dodgerblue4")) +
+      labs(x = "Ethnicity", y = "Population Count", fill = "Ethnicity") +
+      theme(legend.position = "bottom")
+
   })
   
   output$eth_plot <- renderPlot({
-    eth_plot()
+    eth_plot() 
   })
   
-  # ethn_plot <- reactive({
-  #   eth_10 <- ethnicity %>% 
-  #     filter(state == input$state3) %>% 
-  #     filter(eth_dist == input$ethnicity_check)
-  #   
-  #   ggplot(data = eth_10,
-  #          aes(x = eth_dist, y = count)) +
-  #     geom_col() +
-  #     coord_flip() + 
-  #     scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
-  # })
-  # 
-  # output$ethn_plot <- renderPlot({
-  #   ethn_plot()
-  # })
-  # 
+  eth_header <- reactive({
+    print("Figure 3:")
+  })
+  
+  eth_text <- reactive({
+    print("An interactive column graph that displays the population count of different ethnicity groups 
+          that are 1/2 mile, 1 mile, 10 miles, or 20 miles away from the nearest supermarket for each state. The 
+          user can select which ethnicity groups they would like to look at, as well as the state and distance.")
+    
+  })
+  
+  output$eth_header <- renderText({
+    eth_header()
+  })
+  
+  output$eth_text <- renderText({
+    eth_text()
+  })
   
   # widget 4 output
   
@@ -388,14 +418,14 @@ server <- function(input, output) {
       rename(Classification = urban,
              County = county,
              HUNV = value,
-             Population = tot_pop)
-    
+             Population = tot_pop) 
+     
       x <- ggplot(data = vehicle_access_data, 
              aes(x = HUNV, y = Population)) +
       geom_point(aes(color = County,shape = Classification)) +
-        scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
+        scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) + 
         theme(legend.position = "none") +
-        labs(x = "Housing Units Without a Vehicle (HUNV)",
+        labs(x = "Housing Units with No Vehicle (HUNV)",
              y = "Total Population Count")
       
       ggplotly(x)
@@ -404,6 +434,27 @@ server <- function(input, output) {
   output$vehicle_access <- renderPlotly({
     vehicle_access()
     })
+  
+  vehicle_header <- reactive({
+    print("Figure 4:")
+  })
+  
+  vehicle_text <- reactive({
+    print("An interactive scatterplot that displays population count versus how many housing units have 
+    no vehicle access at a specific distance from the nearest supermarket. The user can select which distances to look at:
+    1/2 mile, 1 mile, 10 miles, and 20 miles from the nearest supermarket. Circles represent rural county classification 
+    while triangles represent urban county classification. The user can hover over each point to see the exact number
+          of housing units with no vehicle access (HUNV) for each county.")
+
+  })
+  
+  output$vehicle_header <- renderText({
+    vehicle_header()
+  })
+  
+  output$vehicle_text <- renderText({
+    vehicle_text()
+  })
   
 }
 
