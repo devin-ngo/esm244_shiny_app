@@ -436,7 +436,7 @@ server <- function(input, output) {
   })
   
   eth_header <- reactive({
-    print("Figure 3:")
+    print("Figure 4:")
   })
   
   eth_text <- reactive({
@@ -482,7 +482,7 @@ server <- function(input, output) {
     })
   
   vehicle_header <- reactive({
-    print("Figure 4:")
+    print("Figure 5:")
   })
   
   vehicle_text <- reactive({
