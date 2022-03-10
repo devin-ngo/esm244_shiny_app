@@ -91,12 +91,12 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                                                max = 250000, value = c(50000, 100000))
                                       ), #end sidebarPanel 3
                                       mainPanel(h3("Income and SNAP Program"),
-                                        dataTableOutput(outputId = "state_pop_table"),
-                                        p(h5(strong(textOutput("figure2")))),
-                                        p(textOutput("figure2_text")),
-                                        dataTableOutput(outputId = "income_snap_table"),
-                                        p(h5(strong(textOutput("figure3")))),
-                                        p(textOutput("figure3_text"))
+                                        p(h5(strong(textOutput("snap_header")))),
+                                        p(textOutput("snap_text")),
+                                        p(dataTableOutput(outputId = "state_pop_table")),
+                                        p(h5(strong(textOutput("income_header")))),
+                                        p(textOutput("income_text")),
+                                        p(dataTableOutput(outputId = "income_snap_table"))
                                         ) #end mainPanel
                                     ) # end sidebarLayout 3
                            ), #End tabPanel 3
@@ -345,11 +345,11 @@ server <- function(input, output) {
               style = "bootstrap4")
   })
   
-  figure2 <- reactive({
+  snap_header <- reactive({
     print("Figure 2:")
   })
   
-  figure2_text <- reactive({
+  snap_text <- reactive({
     print("Population of chosen state with number of households that receive SNAP benefits.")
   })
    
@@ -371,38 +371,54 @@ server <- function(input, output) {
               style = "bootstrap4")
   })
   
-  figure3 <- reactive({
+  income_header <- reactive({
     print("Figure 3:")
   })
   
-  figure3_text <- reactive({
-    print("Interactive table showing the number of household in each county that receive SNAP benefits. Counties are
-          listed based on the state chosen.")
+  income_text <- reactive({
+    print("Interactive table showing the number of household in each county that receive SNAP benefits based on an 
+           income range. Counties are listed based on the state chosen.")
+  })
+  
+  output$snap_header <- renderText({
+    snap_header()
+  })
+  
+  output$snap_text <- renderText({
+    snap_text()
   })
   
   output$state_pop_table <- renderDataTable({
     state_pop_table()
   })
   
-  output$figure2 <- renderText({
-    figure2()
-  })
-  
-  ouput$figure2_text <- renderText({
-    figure2_text()
-  })
+  # output$snap_header <- renderText({
+  #   snap_header()
+  # })
+  # 
+  # ouput$snap_text <- renderText({
+  #   snap_text()
+  # })
   
   output$income_snap_table <- renderDataTable({
     income_snap_table()
   })
   
-  output$figure3 <- renderText({
-    figure3()
+  output$income_header <- renderText({
+    income_header()
   })
   
-  output$figure3_text <- renderText({
-    figure3_text()
+  output$income_text <- renderText({
+    income_text()
   })
+  
+  # output$income_header <- renderText({
+  #   income_header()
+  # })
+  # 
+  # output$income_text <- renderText({
+  #   income_text()
+  # })
 
   # Widget 3 output
   
