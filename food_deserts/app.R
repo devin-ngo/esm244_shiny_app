@@ -47,7 +47,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                 navbarPage("Food Access Tools",
                            tabPanel("Introduction",
                                     sidebarLayout(
-                                      sidebarPanel(style = "background-color: #a8c66c",
+                                      sidebarPanel(style = "background-color: #f8f4e4",
                                         textOutput("sp_citation"),
                                         p(h4(strong(textOutput("sp_authors")))),
                                         p(h5(strong(textOutput("sp_author_km")))),
@@ -59,7 +59,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                         h3(textOutput("introduction")),
                                         p(textOutput("introduction_text1")),
                                         p(img(src = "food_deserts_stats.png")),
-                                        p(img(src = "US_map.png", width = "800px", height = "500px")),
+                                        p(img(src = "US_map.png", width = "600px", height = "375px")),
                                         p(textOutput("introduction_text2")),
                                         p(textOutput("introduction_text3")),
                                         p(textOutput("widget1_text")),
@@ -71,7 +71,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                            ), #end tabPanel 1
                            tabPanel("Rural and Urban County Breakdown",
                                     sidebarLayout(
-                                      sidebarPanel(style = "background-color: #a8c66c",
+                                      sidebarPanel(style = "background-color: #f8f4e4",
                                                    selectInput(inputId = "state", label = h4("Select State:"),
                                                                choices = unique(food_access$state), selected = "Alabama") # end select input
                                     ), # end sidebarPanel 2
@@ -84,7 +84,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                            
                            tabPanel("Income and SNAP Program",
                                     sidebarLayout(
-                                      sidebarPanel(style = "background-color: #a8c66c",
+                                      sidebarPanel(style = "background-color: #f8f4e4",
                                                    selectInput(inputId = "state2", label = h4("Select State:"),
                                                                choices = unique(food_access$state), selected = "Alabama"),
                                                    sliderInput(inputId = "income_slider", label = h4("Select Income Range:"), min = 0, 
@@ -92,14 +92,18 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                       ), #end sidebarPanel 3
                                       mainPanel(h3("Income and SNAP Program"),
                                         dataTableOutput(outputId = "state_pop_table"),
-                                        dataTableOutput(outputId = "income_snap_table")
+                                        p(h5(strong(textOutput("figure2")))),
+                                        p(textOutput("figure2_text")),
+                                        dataTableOutput(outputId = "income_snap_table"),
+                                        p(h5(strong(textOutput("figure3")))),
+                                        p(textOutput("figure3_text"))
                                         ) #end mainPanel
                                     ) # end sidebarLayout 3
                            ), #End tabPanel 3
                            
                            tabPanel("Ethnicity and Food Access",
                                     sidebarLayout(
-                                      sidebarPanel(style = "background-color: #a8c66c", 
+                                      sidebarPanel(style = "background-color: #f8f4e4", 
                                           selectInput(inputId = "state3", label = h4("Select State:"),
                                                                choices = unique(food_access$state), selected = "Alabama"),  
                                                    checkboxGroupInput(inputId = "ethnicity_check", label = h4("Select Ethnicity:"),
@@ -108,7 +112,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                                                                   "American Indian or Alaska Native (AIAN)" = "aian", "Hispanic or Latino"= "hisp",
                                                                                   "Other or Multiple Race" = "omultir"),
                                                                       selected = c("white", "black", "asian", "nhopi", "aian", "hisp", "omultir")),
-                                                   radioButtons(inputId = "ethnicity_radio", label = h3("Distance from nearest supermarket"),
+                                                   radioButtons(inputId = "ethnicity_radio", label = h4("Distance from nearest supermarket:"),
                                                                 choiceNames = list("1/2 Mile", "1 Mile", "10 Miles", "20 Miles"),
                                                                 choiceValues = list("half", "1", "10", "20"),
                                                                 selected = "half")
@@ -122,7 +126,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
 
                            tabPanel("Vehicle Access and Food Access",
                                     sidebarLayout(
-                                      sidebarPanel(style = "background-color: #a8c66c",
+                                      sidebarPanel(style = "background-color: #f8f4e4",
                                                    selectInput(inputId = "state4", label = h4("Select State:"),
                                                                choices = unique(pivot_longer_vehicle$state), selected = "Alabama"),  
                                                    radioButtons(inputId = "vehicle_radio", label = h4("Select Distance from Nearest Supermarket:"),
@@ -341,8 +345,12 @@ server <- function(input, output) {
               style = "bootstrap4")
   })
   
-  output$state_pop_table <- renderDataTable({
-    state_pop_table()
+  figure2 <- reactive({
+    print("Figure 2:")
+  })
+  
+  figure2_text <- reactive({
+    print("Population of chosen state with number of households that receive SNAP benefits.")
   })
    
   income_snap_table <- reactive({
@@ -363,8 +371,37 @@ server <- function(input, output) {
               style = "bootstrap4")
   })
   
+  figure3 <- reactive({
+    print("Figure 3:")
+  })
+  
+  figure3_text <- reactive({
+    print("Interactive table showing the number of household in each county that receive SNAP benefits. Counties are
+          listed based on the state chosen.")
+  })
+  
+  output$state_pop_table <- renderDataTable({
+    state_pop_table()
+  })
+  
+  output$figure2 <- renderText({
+    figure2()
+  })
+  
+  ouput$figure2_text <- renderText({
+    figure2_text()
+  })
+  
   output$income_snap_table <- renderDataTable({
     income_snap_table()
+  })
+  
+  output$figure3 <- renderText({
+    figure3()
+  })
+  
+  output$figure3_text <- renderText({
+    figure3_text()
   })
 
   # Widget 3 output
