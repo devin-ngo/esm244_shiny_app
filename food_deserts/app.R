@@ -65,7 +65,12 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                         p(textOutput("widget1_text")),
                                         p(textOutput("widget2_text")),
                                         p(textOutput("widget3_text")),
-                                        p(textOutput("widget4_text"))
+                                        p(textOutput("widget4_text")),
+                                        h3(textOutput("citation_header")),
+                                        p(textOutput("citation_text")),
+                                        p(textOutput("citation_text2")),
+                                        p(textOutput("citation_text3")),
+                                        p(textOutput("citation_text4"))
                                     ) # end mainPanel 1
                                     ) # end sidebarLayout 1
                            ), #end tabPanel 1
@@ -214,12 +219,11 @@ server <- function(input, output) {
   
   introduction_text1 <- reactive({
     print("Throughout the United States, food deserts are a major issue. Food deserts are defined as
-           regions where people have limited access to food that is both nutritious and helpful (Jessica
-           Caporuscia, 2020). Limitations can arise due to low-income or distance to the nearest supermarket. 
-           In 2012, the United States Department of Agriculture (USDA) reported that based on the 2000 and 2006
-           census data, there were more than 6,500 food deserts within the U.S. (USDA). Based on the finding of the 
+           regions where people have limited access to food that is both nutritious and helpful (Caporuscia, 2020). Limitations can arise due to low-income or distance to the nearest supermarket. 
+           In 2012, the United States Department of Agriculture (Dutko et al., 2012) reported that based on the 2000 and 2006
+           census data, there were more than 6,500 food deserts within the U.S. (Dutko et al., 2012). Based on the finding of the 
            report created by the USDA in 2012, they found the most significant factor relating to food deserts
-           is poverty and ethnicity (USDA). Other significant factors are included in this figure produced by the USDA.
+           is poverty and ethnicity (Dutko et al., 2012). Other significant factors are included in this figure produced by the USDA.
            A map of the United States is included below for reference.")
   })
   
@@ -229,8 +233,8 @@ server <- function(input, output) {
           likely to have convenience stores rather than supermarkets, which provide less nutritious options (Khan, 2018).
           A study examining neighborhoods in Austin, Texas found that the mean percentage of healthy food available in food
           oases, areas where residents had abundant access to healthful foods, was signficantly higher than that 
-          of food deserts (Jin and Lu, 2021). These findings indicate an urgent need to provide impoverished communities
-          equal access to healthy foods (Jin and Lu, 2021).")
+          of food deserts (Jin & Lu, 2021). These findings indicate an urgent need to provide impoverished communities
+          equal access to healthy foods (Jin & Lu, 2021).")
     
   })
   
@@ -256,6 +260,30 @@ server <- function(input, output) {
   widget4_text <- reactive({
     print("The final widget looks at how many housing units do not own a vehicle within a certain 
            distance from the nearest supermarket.")
+  })
+  
+  citation_header <- reactive({
+    print("References")
+  })
+  
+  citation_text <- reactive({
+    print("Caporuscio, J. (2020, June 22). What are food deserts, and how do they impact health? Medical News Today. 
+          Retrieved from https://www.medicalnewstoday.com/articles/what-are-food-deserts")
+  })
+  
+  citation_text2 <- reactive({
+    print("Dutko, P., Ver Ploeg, M., & Farrigan, T. (2012). (rep.). Characteristics and Influential Factors of Food Deserts (No. 140). 
+          United States Department of Agriculture, Economic Research Service.")
+  })
+  
+  citation_text3 <- reactive({
+    print("Jin, H., & Lu, Y. (2021). Evaluating Consumer Nutrition Environment in Food Deserts and Food Swamps. 
+          International Journal of Environmental Research and Public Health, 18(5), 2675. https://doi.org/10.3390/ijerph18052675")
+  })
+  
+  citation_text4 <- reactive({
+    print("Khan, A. (2018, March 30). Nutritional Effects of Food Deserts: A Story of Supply or Demand. Chicago Policy Review. 
+          Retrieved from https://chicagopolicyreview.org/2018/03/30/nutritional-effects-of-food-deserts-a-story-of-supply-or-demand/ ")
   })
   
   output$introduction <- renderText({
@@ -290,6 +318,27 @@ server <- function(input, output) {
     widget4_text()
   })
   
+  output$citation_header <- renderText({
+    citation_header()
+  })
+  
+  output$citation_text <- renderText({
+    citation_text()
+  })
+  
+  output$citation_text2 <- renderText({
+    citation_text2()
+  })
+  
+  output$citation_text3 <- renderText({
+    citation_text3()
+  })
+  
+  output$citation_text4 <- renderText({
+    citation_text4()
+  })
+  
+
   # Main panel output for map tab
   county_map <- reactive({
     state_county_sf <- rur_urb_geom_sf %>%
@@ -316,7 +365,7 @@ server <- function(input, output) {
     print("An interactive map that will switch displays depending on which state is chosen. Counties are colored based
           on their county classification: yellow for counties that are more urban and blue for counties that are more 
           rural. When a county is chosen, you can view the county name, the total population in 2010, and the county 
-          classification.") # try renderText
+          classification. Data: Food Access Research Atlas") # try renderText
   })
   
   output$county_map <- renderTmap({
@@ -377,7 +426,7 @@ server <- function(input, output) {
   
   income_text <- reactive({
     print("Interactive table showing the number of household in each county that receive SNAP benefits based on an 
-           income range. Counties are listed based on the state chosen.")
+           income range. Counties are listed based on the state chosen. Data: Food Access Research Atlas")
   })
   
   output$snap_header <- renderText({
@@ -458,7 +507,8 @@ server <- function(input, output) {
   eth_text <- reactive({
     print("An interactive column graph that displays the population count of different ethnicity groups 
           that are 1/2 mile, 1 mile, 10 miles, or 20 miles away from the nearest supermarket for each state. The 
-          user can select which ethnicity groups they would like to look at, as well as the state and distance.")
+          user can select which ethnicity groups they would like to look at, as well as the state and distance. 
+          Data: Food Access Research Atlas")
     
   })
   
@@ -506,7 +556,7 @@ server <- function(input, output) {
     no vehicle access at a specific distance from the nearest supermarket. The user can select which distances to look at:
     1/2 mile, 1 mile, 10 miles, and 20 miles from the nearest supermarket. Circles represent rural county classification 
     while triangles represent urban county classification. The user can hover over each point to see the exact number
-          of housing units with no vehicle access (HUNV) for each county.")
+          of housing units with no vehicle access (HUNV) for each county. Data: Food Access Research Atlas")
 
   })
   
