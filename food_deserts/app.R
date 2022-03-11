@@ -42,7 +42,7 @@ my_theme <- bs_theme(bootswatch = "flatly",
                      success = "#a8c66c")
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
+ui <- fluidPage(theme = my_theme, 
                 titlePanel("Food Deserts in America"), # Application title 
                 navbarPage("Food Access Tools",
                            tabPanel("Introduction",
@@ -60,6 +60,7 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                         p(textOutput("introduction_text1")),
                                         div(img(src = "food_deserts_stats.png"), style = "text-align: center;" ),
                                         div(img(src = "US_map.png", width = "600px", height = "375px"), style ="text-align: center;"),
+                                        div(textOutput("img_source"), style ="text-align: center;"),
                                         p(textOutput("introduction_text2")),
                                         p(textOutput("introduction_text3")),
                                         p(textOutput("widget1_text")),
@@ -244,6 +245,10 @@ server <- function(input, output) {
            from the nearest supermarket. We hope to shed a light on the issue of food insecurity
            and how changes need to be made to improve access to food for disadvantaged communities.")
   })
+  
+  img_source <- reactive({
+    print('Source: Policy & Medicine, "United States Map With State Names", 2020.')
+  })
     
   widget1_text <- reactive({
     print("The first widget takes a look at the breakdown of counties by state and rural/urban designations.")
@@ -302,6 +307,10 @@ server <- function(input, output) {
     introduction_text3()
   })
   
+  output$img_source <- renderText({
+    img_source()
+  })
+  
   output$widget1_text <- renderText({
     widget1_text()
   })
@@ -337,7 +346,6 @@ server <- function(input, output) {
   output$citation_text4 <- renderText({
     citation_text4()
   })
-  
 
   # Main panel output for map tab
   county_map <- reactive({
@@ -365,7 +373,7 @@ server <- function(input, output) {
     print("An interactive map that will switch displays depending on which state is chosen. Counties are colored based
           on their county classification: yellow for counties that are more urban and blue for counties that are more 
           rural. When a county is chosen, you can view the county name, the total population in 2010, and the county 
-          classification. Data: Food Access Research Atlas") # try renderText
+          classification. Data: Food Access Research Atlas.") # try renderText
   })
   
   output$county_map <- renderTmap({
@@ -400,7 +408,7 @@ server <- function(input, output) {
   
   snap_text <- reactive({
     print("Population of chosen state with number of households that receive SNAP benefits. 
-    Data: Food Access Research Atlas")
+    Data: Food Access Research Atlas.")
   })
    
   income_snap_table <- reactive({
@@ -427,7 +435,7 @@ server <- function(input, output) {
   
   income_text <- reactive({
     print("Interactive table showing the number of household in each county that receive SNAP benefits based on an 
-           income range. Counties are listed based on the state chosen. Data: Food Access Research Atlas")
+           income range. Counties are listed based on the state chosen. Data: Food Access Research Atlas.")
   })
   
   output$snap_header <- renderText({
@@ -442,14 +450,6 @@ server <- function(input, output) {
     state_pop_table()
   })
   
-  # output$snap_header <- renderText({
-  #   snap_header()
-  # })
-  # 
-  # ouput$snap_text <- renderText({
-  #   snap_text()
-  # })
-  
   output$income_snap_table <- renderDataTable({
     income_snap_table()
   })
@@ -462,14 +462,6 @@ server <- function(input, output) {
     income_text()
   })
   
-  # output$income_header <- renderText({
-  #   income_header()
-  # })
-  # 
-  # output$income_text <- renderText({
-  #   income_text()
-  # })
-
   # Widget 3 output
   
   eth_plot <- reactive({
@@ -509,7 +501,7 @@ server <- function(input, output) {
     print("An interactive column graph that displays the population count of different ethnicity groups 
           that are 1/2 mile, 1 mile, 10 miles, or 20 miles away from the nearest supermarket for each state. The 
           user can select which ethnicity groups they would like to look at, as well as the state and distance. 
-          Data: Food Access Research Atlas")
+          Data: Food Access Research Atlas.")
     
   })
   
@@ -557,7 +549,7 @@ server <- function(input, output) {
     no vehicle access at a specific distance from the nearest supermarket. The user can select which distances to look at:
     1/2 mile, 1 mile, 10 miles, and 20 miles from the nearest supermarket. Circles represent rural county classification 
     while triangles represent urban county classification. The user can hover over each point to see the exact number
-          of housing units with no vehicle access (HUNV) for each county. Data: Food Access Research Atlas")
+          of housing units with no vehicle access (HUNV) for each county. Data: Food Access Research Atlas.")
 
   })
   
