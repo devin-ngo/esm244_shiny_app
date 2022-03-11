@@ -58,8 +58,8 @@ ui <- fluidPage(theme = my_theme, # Will probably customize own theme later
                                       mainPanel(
                                         h3(textOutput("introduction")),
                                         p(textOutput("introduction_text1")),
-                                        p(img(src = "food_deserts_stats.png")),
-                                        p(img(src = "US_map.png", width = "600px", height = "375px")),
+                                        div(img(src = "food_deserts_stats.png"), style = "text-align: center;" ),
+                                        div(img(src = "US_map.png", width = "600px", height = "375px"), style ="text-align: center;"),
                                         p(textOutput("introduction_text2")),
                                         p(textOutput("introduction_text3")),
                                         p(textOutput("widget1_text")),
@@ -399,7 +399,8 @@ server <- function(input, output) {
   })
   
   snap_text <- reactive({
-    print("Population of chosen state with number of households that receive SNAP benefits.")
+    print("Population of chosen state with number of households that receive SNAP benefits. 
+    Data: Food Access Research Atlas")
   })
    
   income_snap_table <- reactive({
