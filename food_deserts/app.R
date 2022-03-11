@@ -220,7 +220,7 @@ server <- function(input, output) {
   
   introduction_text1 <- reactive({
     print("Throughout the United States, food deserts are a major issue. Food deserts are defined as
-           regions where people have limited access to food that is both nutritious and helpful (Caporuscia, 2020). Limitations can arise due to low-income or distance to the nearest supermarket. 
+           regions where people have limited access to food that is both nutritious and healthful (Caporuscia, 2020). Limitations can arise due to low-income or distance to the nearest supermarket. 
            In 2012, the United States Department of Agriculture (Dutko et al., 2012) reported that based on the 2000 and 2006
            census data, there were more than 6,500 food deserts within the U.S. (Dutko et al., 2012). Based on the finding of the 
            report created by the USDA in 2012, they found the most significant factor relating to food deserts
